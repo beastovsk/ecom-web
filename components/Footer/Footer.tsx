@@ -29,8 +29,8 @@ export const Footer = () => {
               <h4 className='font-semibold mb-2'>Ссылки сайта</h4>
               <nav className='space-y-1 text-gray-600 flex flex-col items-start'>
                 <Link href='/'>Главная</Link>
-                <Link href='/shop'>Магазин</Link>
-                <Link href='/contact'>Контакты</Link>
+                <Link href='/products'>Продукты</Link>
+                <Link href='/contacts'>Контакты</Link>
               </nav>
             </div>
             <div>

@@ -28,10 +28,10 @@ export const Header = () => {
         <Link href='/' className='opacity-70 hover:opacity-90'>
           Главная
         </Link>
-        <Link href='/shop' className='opacity-70 hover:opacity-90'>
-          Магазин
+        <Link href='/products' className='opacity-70 hover:opacity-90'>
+          Продукты
         </Link>
-        <Link href='/contact' className='opacity-70 hover:opacity-90'>
+        <Link href='/contacts' className='opacity-70 hover:opacity-90'>
           Контакты
         </Link>
       </nav>
@@ -51,10 +51,10 @@ export const Header = () => {
               <Link href='/' className='text-lg opacity-70 hover:opacity-90'>
                 Главная
               </Link>
-              <Link href='/shop' className='text-lg opacity-70 hover:opacity-90'>
-                Магазин
+              <Link href='/products' className='text-lg opacity-70 hover:opacity-90'>
+                Продукты
               </Link>
-              <Link href='/contact' className='text-lg opacity-70 hover:opacity-90'>
+              <Link href='/contacts' className='text-lg opacity-70 hover:opacity-90'>
                 Контакты
               </Link>
             </nav>
