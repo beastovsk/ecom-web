@@ -37,10 +37,10 @@ const gilroy = localFont({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Startup Idea',
-    template: `%s | Startup Idea`
+    default: 'ECOM',
+    template: `%s | Магазин`
   },
-  description: 'Находим бизнес-продукты с помощью ИИ',
+  description: 'Шаблон магазина',
   keywords: keywords,
   robots: {
     index: true,

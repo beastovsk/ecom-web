@@ -1,11 +1,13 @@
+import {Footer} from '@/components/Footer/Footer';
 import {Header} from '@/components/Header/Header';
 import React from 'react';
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <div className='flex min-h-screen w-full flex-col'>
+    <div className='flex min-h-screen flex-col'>
       <Header />
-      {children}
+      <main className='flex-grow'>{children}</main>
+      <Footer />
     </div>
   );
 }
