@@ -29,8 +29,8 @@ export const ProductDetails = ({id}) => {
         {/* Правая часть - Информация о товаре */}
         <div className='flex flex-col space-y-4'>
           {/* Название и цена */}
-          <h1 className='text-3xl font-semibold'>Asgaard sofa</h1>
-          <p className='text-xl text-gray-600'>Rs. 250,000.00</p>
+          <h1 className='text-3xl font-semibold'>Диван</h1>
+          <p className='text-xl text-gray-600'>Р 250,000.00</p>
 
           {/* Рейтинг */}
           <div className='flex items-center'>
@@ -40,7 +40,7 @@ export const ProductDetails = ({id}) => {
                 <span key={index}>&#9733;</span> // Иконка звезды
               ))}
             </div>
-            <p className='ml-2 text-sm text-gray-500'>5 Customer Review</p>
+            <p className='ml-2 text-sm text-gray-500'>5 отзывов</p>
           </div>
 
           {/* Описание товара */}
@@ -56,19 +56,19 @@ export const ProductDetails = ({id}) => {
               <span className='mx-4'>1</span>
               <button className='text-lg'>+</button>
             </div>
-            <Button className='px-6 py-2 rounded-md'>Add To Cart</Button>
+            <Button className='px-6 py-2 rounded-md'>В корзину</Button>
           </div>
 
           {/* Информация о товаре */}
           <div className='mt-4 space-y-1 text-sm text-gray-600'>
             <p>
-              <strong>SKU:</strong> SS001
+              <strong>Артикул:</strong> 11131
             </p>
             <p>
-              <strong>Category:</strong> Sofas
+              <strong>Категория:</strong> Диваны
             </p>
             <p>
-              <strong>Tags:</strong> Sofa, Chair, Home, Shop
+              <strong>Теги:</strong> Диван, мягкая мебель, мебель в зал
             </p>
           </div>
         </div>
@@ -76,7 +76,7 @@ export const ProductDetails = ({id}) => {
         {/* Описание, Дополнительная информация */}
         <div className='col-span-1 md:col-span-2 mt-10 border-t pt-8'>
           <div className='flex justify-between'>
-            <button className='text-lg font-semibold border-b-2 border-primary px-4'>Description</button>
+            <button className='text-lg font-semibold border-b-2 border-primary px-4'>Описание</button>
           </div>
           <div className='mt-6 text-gray-700'>
             <p>

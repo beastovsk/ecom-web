@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import {Menu, Search, ShoppingCart, Icon} from 'lucide-react';
+import {Menu, Search, ShoppingCart, Icon, UserCircle} from 'lucide-react';
 import {
   Sheet,
   SheetClose,
@@ -38,9 +38,10 @@ export const Header = () => {
 
       {/* Иконки справа */}
       <div className='flex items-center space-x-4'>
-        <Search size={24} className='opacity-70 hover:opacity-90 cursor-pointer' />
-        <ShoppingCart size={24} className='opacity-70 hover:opacity-90 cursor-pointer' />
-
+        <UserCircle size={24} className='opacity-70 hover:opacity-90 cursor-pointer' />
+        <Link href='/cart' className='opacity-70 hover:opacity-90'>
+          <ShoppingCart size={24} />
+        </Link>
         {/* Бургер-меню для мобильных устройств */}
         <Sheet>
           <SheetTrigger className='md:hidden'>
