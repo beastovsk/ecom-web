@@ -2,7 +2,7 @@ export const Users: React.FC = () => {
   return (
     <div>
       <h1 className='text-2xl font-bold mb-6'>Пользователи</h1>
-      <div className='bg-white p-4 shadow-md rounded-lg'>
+      <div className='p-4 shadow-md rounded-lg'>
         <table className='w-full'>
           <thead>
             <tr>

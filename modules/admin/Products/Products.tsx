@@ -1,3 +1,6 @@
+import { Button } from '@/components/ui/button';
+import {Input} from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import React from 'react';
 
 export const Products: React.FC = () => {
@@ -5,7 +8,7 @@ export const Products: React.FC = () => {
     <div>
       <h1 className='text-2xl font-bold mb-6'>Продукты</h1>
       {/* Здесь будет таблица продуктов и форма для добавления/редактирования продуктов */}
-      <div className='bg-white p-4 shadow-md rounded-lg'>
+      <div className='p-4 shadow-md rounded-lg'>
         <table className='w-full'>
           <thead>
             <tr>
@@ -32,12 +35,10 @@ export const Products: React.FC = () => {
         <div className='mt-4'>
           <h2 className='text-xl font-semibold mb-2'>Добавить новый продукт</h2>
           <form>
-            <input type='text' placeholder='Название продукта' className='border p-2 w-full mb-4' />
-            <input type='text' placeholder='Цена' className='border p-2 w-full mb-4' />
-            <textarea placeholder='Описание' className='border p-2 w-full mb-4'></textarea>
-            <button type='submit' className='bg-blue-600 text-white px-4 py-2 rounded-md'>
-              Сохранить
-            </button>
+            <Input type='text' placeholder='Название продукта' className='border p-2 w-full mb-4' />
+            <Input type='text' placeholder='Цена' className='border p-2 w-full mb-4' />
+            <Textarea placeholder='Описание' className='border p-2 w-full mb-4'></Textarea>
+            <Button className='px-4 py-2 rounded-md'>Сохранить</Button>
           </form>
         </div>
       </div>
