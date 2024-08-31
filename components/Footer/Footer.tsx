@@ -3,6 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import {Icon} from 'lucide-react'; // Использование иконок, если необходимо
+import {Dialog, DialogTrigger} from '@radix-ui/react-dialog';
+import {DialogContent, DialogHeader} from '../ui/dialog';
 
 export const Footer = () => {
   return (
@@ -36,8 +38,10 @@ export const Footer = () => {
             <div>
               <h4 className='font-semibold mb-2'>Документы</h4>
               <nav className='space-y-1 text-gray-600 flex flex-col items-start'>
-                <Link href='/offer'>Публичная оферта</Link>
-                <Link href='/return'>Возврат</Link>
+                <Dialog>
+                  <DialogTrigger>Публичная оферта</DialogTrigger>
+                  <DialogContent> asdsad</DialogContent>
+                </Dialog>
               </nav>
             </div>
           </div>

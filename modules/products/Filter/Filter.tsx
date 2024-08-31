@@ -1,3 +1,4 @@
+import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 
@@ -31,7 +32,10 @@ export const Filter = () => {
       {/* Секция фильтров и товаров */}
       <div className='grid grid-cols-1 lg:grid-cols-filter mt-6 gap-8'>
         {/* Блок фильтрации по цене */}
-        <div className='shadow-sm p-6 rounded-md'>
+        <div className='shadow-sm p-6 rounded-md h-max'>
+          <h2 className='text-lg font-semibold mb-4'>Поиск</h2>
+          <Input className='w-full mb-4' />
+
           <h2 className='text-lg font-semibold mb-4'>Цена</h2>
           <div className='flex flex-col gap-4'>
             <div>
@@ -43,6 +47,20 @@ export const Filter = () => {
               <Input className='w-full' />
             </div>
           </div>
+          <h2 className='text-lg font-semibold mt-4'>Категория</h2>
+          <Select>
+            <SelectTrigger className='mt-1'>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='popularity' defaultChecked>
+                Категория 1
+              </SelectItem>
+              <SelectItem value='price-desc'>Категория 2</SelectItem>
+              <SelectItem value='price-asc'>Категория 3</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button className='mt-5 w-full'>Поиск</Button>
         </div>
 
         {/* Блок отображения товаров */}
