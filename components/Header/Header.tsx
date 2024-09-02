@@ -1,20 +1,18 @@
 'use client'; // Необходим для компонентов, которые используют интерактивные элементы
 
-import * as React from 'react';
+import {useEffect} from 'react';
 import Link from 'next/link';
-import {Menu, Search, ShoppingCart, Icon, UserCircle} from 'lucide-react';
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger
-} from '@/components/ui/sheet';
+import {Menu, ShoppingCart, UserCircle} from 'lucide-react';
+import {Sheet, SheetContent, SheetTrigger} from '@/components/ui/sheet';
+import {useQuery} from 'react-query';
+import {GetUser} from '@/data/api/user';
+import {getCookie} from 'cookies-next';
+import {useRouter} from 'next/navigation';
+import {Button} from '../ui/button';
 
 export const Header = () => {
+  const token = getCookie('token');
+
   return (
     <header className='flex items-center justify-between p-4 shadow-sm'>
       {/* Лого */}
@@ -34,11 +32,23 @@ export const Header = () => {
         <Link href='/contacts' className='opacity-70 hover:opacity-90'>
           Контакты
         </Link>
+        <Link href='/blog' className='opacity-70 hover:opacity-90'>
+          Блог
+        </Link>
       </nav>
 
       {/* Иконки справа */}
       <div className='flex items-center space-x-4'>
-        <UserCircle size={24} className='opacity-70 hover:opacity-90 cursor-pointer' />
+        {' '}
+        {token ? (
+          <Link href='/profile' className='opacity-70 hover:opacity-90'>
+            <UserCircle size={24} />
+          </Link>
+        ) : (
+          <Link href='/login'>
+            <Button>Войти</Button>
+          </Link>
+        )}
         <Link href='/cart' className='opacity-70 hover:opacity-90'>
           <ShoppingCart size={24} />
         </Link>

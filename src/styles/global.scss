@@ -87,3 +87,9 @@ textarea {
 body {
   overflow-x: hidden;
 }
+.ant-upload-list-item {
+  border-color: inherit !important;
+}
+.ant-tooltip {
+  display: none !important;
+}

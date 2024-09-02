@@ -1,36 +1,106 @@
 'use client';
 
 import * as React from 'react';
+import {useForm} from 'react-hook-form';
+import {zodResolver} from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import {Input} from '@/components/ui/input';
 import {Button} from '@/components/ui/button';
+import {useToast} from '@/components/ui/use-toast';
+import {useMutation} from 'react-query';
+import {createOrder} from '@/data/api/order';
+import {useRouter} from 'next/navigation';
+
+// Схема валидации с помощью Zod
+const orderSchema = z.object({
+  firstName: z.string().min(1, 'Введите имя'),
+  lastName: z.string().min(1, 'Введите фамилию'),
+  phoneNumber: z.string().min(10, 'Введите корректный номер телефона').max(15, 'Слишком длинный номер телефона'),
+  additionalInfo: z.string().optional()
+});
 
 export const Order = () => {
-  const [orderSuccess, setOrderSuccess] = React.useState(false);
+  const [cartItems, setCartItems] = React.useState([]);
+  const {toast} = useToast();
+  const {mutate} = useMutation(createOrder);
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Здесь можно обработать отправку данных на сервер
-    setOrderSuccess(true); // Показываем уведомление об успешном заказе
+  React.useEffect(() => {
+    const cart = localStorage.getItem('cart');
+    if (cart) {
+      setCartItems(JSON.parse(cart));
+    }
+  }, []);
+
+  const {
+    register,
+    handleSubmit,
+    formState: {errors}
+  } = useForm({
+    resolver: zodResolver(orderSchema)
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      // Подготовка массива продуктов для отправки на сервер
+      const products = cartItems.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity
+      }));
+
+      mutate(
+        {...data, products},
+        {
+          onSuccess: ({message}) => {
+            toast({title: 'Информация о заказе', description: message});
+            router.push('/profile');
+          }
+        }
+      );
+
+    } catch (error) {
+      console.error('Ошибка при создании заказа:', error);
+      alert('Произошла ошибка при отправке заказа. Попробуйте еще раз.');
+    }
   };
 
   return (
     <div className='max-w-4xl mx-auto p-6 shadow-md rounded-md'>
       <h2 className='text-2xl font-bold mb-6'>Детали заказа</h2>
 
-      <form onSubmit={handleSubmit} className='space-y-6'>
+      <form className='space-y-6' onSubmit={handleSubmit(onSubmit)}>
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
-          <Input placeholder='Имя' required />
-          <Input placeholder='Фамилия' required />
+          <div>
+            <Input placeholder='Имя' {...register('firstName')} />
+            {errors.firstName && <p className='text-red-600'>{errors.firstName.message}</p>}
+          </div>
+          <div>
+            <Input placeholder='Фамилия' {...register('lastName')} />
+            {errors.lastName && <p className='text-red-600'>{errors.lastName.message}</p>}
+          </div>
         </div>
-        <Input placeholder='Номер телефона' required type='tel' />
-        <Input placeholder='Адрес' required />
-        <Input placeholder='Дополнительная информация' />
+        <div>
+          <Input placeholder='Номер телефона' type='tel' {...register('phoneNumber')} />
+          {errors.phoneNumber && <p className='text-red-600'>{errors.phoneNumber.message}</p>}
+        </div>
+        <div>
+          <Input placeholder='Дополнительная информация' {...register('additionalInfo')} />
+        </div>
 
         <div className='mt-8'>
           <h4 className='text-lg font-semibold'>Ваши товары:</h4>
           <ul className='list-disc list-inside pl-4 mt-2'>
-            {/* Здесь можно отобразить товары из заказа */}
-            <li>Диван Asgaard - 1 шт. - 250 000,00 ₽</li>
+            {cartItems.length > 0 ? (
+              cartItems.map((item) => (
+                <li key={item.id}>
+                  {item.name} - {item.quantity} шт. - {item.price} ₽
+                </li>
+              ))
+            ) : (
+              <p>Корзина пуста</p>
+            )}
           </ul>
         </div>
 

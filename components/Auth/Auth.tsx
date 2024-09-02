@@ -86,7 +86,7 @@ export function UserAuthForm({className, ...props}: UserAuthFormProps) {
 
   useEffect(() => {
     if (token) {
-      push('/home');
+      push('/cart');
     }
   }, [token]);
 
