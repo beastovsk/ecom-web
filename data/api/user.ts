@@ -40,11 +40,10 @@ export const GetUser = async () => {
     method: 'GET'
   }).then((data) => {
     if (!data.ok) {
-      localStorage.removeItem('email');
       deleteCookie('token');
+      window.location.href = '/login';
       return;
     }
     return data.json();
   });
 };
-

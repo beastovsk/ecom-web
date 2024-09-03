@@ -7,10 +7,7 @@ import {Button} from '@/components/ui/button';
 import Image from 'next/image';
 import {getProductById} from '@/data/api/products';
 import parse from 'html-react-parser';
-export const ProductDetails = () => {
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-
+export const ProductDetails = ({id}) => {
   const {data, isSuccess, isLoading} = useQuery(['product', id], () => getProductById({id}), {
     enabled: !!id // Запускаем запрос только если id существует
   });

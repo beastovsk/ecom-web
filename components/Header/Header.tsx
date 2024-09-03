@@ -29,9 +29,9 @@ export const Header = () => {
         <Link href='/products' className='opacity-70 hover:opacity-90'>
           Продукты
         </Link>
-        <Link href='/contacts' className='opacity-70 hover:opacity-90'>
+        {/* <Link href='/contacts' className='opacity-70 hover:opacity-90'>
           Контакты
-        </Link>
+        </Link> */}
         <Link href='/blog' className='opacity-70 hover:opacity-90'>
           Блог
         </Link>
@@ -65,8 +65,8 @@ export const Header = () => {
               <Link href='/products' className='text-lg opacity-70 hover:opacity-90'>
                 Продукты
               </Link>
-              <Link href='/contacts' className='text-lg opacity-70 hover:opacity-90'>
-                Контакты
+              <Link href='/blog' className='text-lg opacity-70 hover:opacity-90'>
+                Блог
               </Link>
             </nav>
           </SheetContent>

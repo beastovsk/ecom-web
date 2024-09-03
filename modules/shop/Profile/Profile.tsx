@@ -6,6 +6,7 @@ import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
 import {getUserOrders} from '@/data/api/order';
+import {formatProductPrice} from '@/src/helpers/hooks';
 
 export const Profile = () => {
   // Получаем заказы через react-query
@@ -39,8 +40,7 @@ export const Profile = () => {
                     <th className='text-left py-4 px-6'>Номер заказа</th>
                     <th className='text-left py-4 px-6'>Имя</th>
                     <th className='text-left py-4 px-6'>Телефон</th>
-                    <th className='text-left py-4 px-6'>Дата</th>
-                    <th className='text-left py-4 px-6'>Сумма</th>
+                    <th className='text-left py-4 px-6'>Количество</th>
                     <th className='text-left py-4 px-6'>Действие</th>
                   </tr>
                 </thead>
@@ -55,11 +55,9 @@ export const Profile = () => {
                           {order.first_name} {order.last_name}
                         </td>
                         <td className='py-4 px-6 whitespace-nowrap'>{order.phone_number}</td>
+
                         <td className='py-4 px-6 whitespace-nowrap'>
-                          {new Date(order.created_at).toLocaleDateString()}
-                        </td>
-                        <td className='py-4 px-6 whitespace-nowrap'>
-                          {order.products ? `${order.products.length} items` : 'No products'}
+                          {order.products ? `${JSON.parse(order.products).length} позиция` : 'No products'}
                         </td>
                         <td className='py-4 px-6 whitespace-nowrap'>
                           <Dialog>
@@ -83,7 +81,14 @@ export const Profile = () => {
                                   {order.additional_info || 'Нет дополнительной информации'}
                                 </p>
                                 <p>
-                                  <b>Товары:</b> {order.products}
+                                  <b>Товары:</b>{' '}
+                                  <div className='flex flex-col gap-2'>
+                                    {JSON.parse(order.products).map(({name, price, quantity}) => (
+                                      <span>
+                                        {name} x {quantity} - {formatProductPrice(price)}
+                                      </span>
+                                    ))}
+                                  </div>
                                 </p>
                               </DialogContent>
                               <DialogFooter>

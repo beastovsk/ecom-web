@@ -10,6 +10,7 @@ import {Skeleton} from '@/components/ui/skeleton';
 export const Products = () => {
   const {data, isSuccess, isLoading} = useQuery('products', getAllProducts);
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
 
   // Обновление состояния продуктов при успешном запросе
   useEffect(() => {
@@ -17,6 +18,16 @@ export const Products = () => {
     const {products} = data;
     setProducts(products?.length ? products.slice(0, 3) : []); // Показываем первые 3 продукта
   }, [data, isSuccess]);
+
+  // Обработчик добавления и удаления из корзины
+  const handleCartToggle = (product) => {
+    const isInCart = cart.some((item) => item.id === product.id);
+    if (isInCart) {
+      setCart(cart.filter((item) => item.id !== product.id)); // Удаление из корзины
+    } else {
+      setCart([...cart, product]); // Добавление в корзину
+    }
+  };
 
   return (
     <div className='p-4'>
@@ -36,26 +47,34 @@ export const Products = () => {
           ))
         ) : products.length ? (
           // Карточки продуктов при успешной загрузке
-          products.map(({id, images, name, price}) => (
-            <div key={id} className='flex flex-col items-center'>
-              <Link href={`/products?id=${id}`} className='w-full'>
-                {' '}
-                <div
-                  className='bg-gray-300 h-72 rounded-xl w-full mb-4'
-                  style={{
-                    backgroundImage: `url(${JSON.parse(images)[0].url})`,
-                    backgroundSize: 'contain',
-                    backgroundPosition: 'center'
-                  }}
-                ></div>
-                <h3 className='text-lg font-semibold'>{name}</h3>
-                <p className='font-semibold opacity-70'>{price.toLocaleString()} R</p>
-              </Link>
-              <Button variant='secondary' className='mt-3 w-full'>
-                В корзину
-              </Button>
-            </div>
-          ))
+          products.map((product) => {
+            const {id, images, name, price} = product;
+            const isInCart = cart.some((item) => item.id === id);
+
+            return (
+              <div key={id} className='flex flex-col items-center'>
+                <Link href={`/products?id=${id}`} className='w-full'>
+                  <div
+                    className='bg-gray-300 h-72 rounded-xl w-full mb-4'
+                    style={{
+                      backgroundImage: `url(${JSON.parse(images)[0].url})`,
+                      backgroundSize: 'contain',
+                      backgroundPosition: 'center'
+                    }}
+                  ></div>
+                  <h3 className='text-lg font-semibold'>{name}</h3>
+                  <p className='font-semibold opacity-70'>{price.toLocaleString()} R</p>
+                </Link>
+                <Button
+                  variant={isInCart ? 'destructive' : 'secondary'}
+                  className='mt-3 w-full'
+                  onClick={() => handleCartToggle(product)}
+                >
+                  {isInCart ? 'Удалить из корзины' : 'В корзину'}
+                </Button>
+              </div>
+            );
+          })
         ) : (
           // Сообщение, если данных нет
           <p className='col-span-full text-center'>Продукты не найдены.</p>

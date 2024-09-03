@@ -2,29 +2,55 @@
 
 import {useState, useEffect} from 'react';
 import {useQuery} from 'react-query';
+import {usePathname, useRouter, useSearchParams} from 'next/navigation';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 import {getAllProducts} from '@/data/api/products'; // Импорт функции для получения продуктов с бэка
+import {getCategories} from '@/data/api/categories'; // Импорт функции для получения категорий с бэка
 import Link from 'next/link';
 
 export const Filter = () => {
+  // Router для получения search-параметров
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   // Состояния
-  const {data, isSuccess, isLoading} = useQuery('products', getAllProducts); // Получение продуктов с бэка
+  const {
+    data: productsData,
+    isSuccess: productsLoaded,
+    isLoading: productsLoading
+  } = useQuery('products', getAllProducts); // Получение продуктов с бэка
+  const {data: categoriesData, isSuccess: categoriesLoaded} = useQuery('categories', getCategories); // Получение категорий с бэка
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [sortOption, setSortOption] = useState('popularity');
   const [priceRange, setPriceRange] = useState({min: '', max: ''});
   const [searchQuery, setSearchQuery] = useState('');
   const [category, setCategory] = useState('all');
+  const [cart, setCart] = useState([]);
 
   // Обновление состояния продуктов при успешном запросе
   useEffect(() => {
-    if (!isSuccess) return;
-    const {products} = data;
+    if (!productsLoaded) return;
+    const {products} = productsData;
     setProducts(products);
     setFilteredProducts(products); // Изначально отображаем все продукты
-  }, [data, isSuccess]);
+  }, [productsData, productsLoaded]);
+
+  // Установка категории из URL при первой загрузке
+  useEffect(() => {
+    const categoryFromURL = searchParams.get('category');
+    if (categoryFromURL) {
+      setCategory(categoryFromURL);
+    }
+  }, [searchParams]);
+
+  // Обновление фильтров
+  useEffect(() => {
+    handleFilterProducts();
+  }, [category, priceRange, searchQuery]);
 
   // Обработчик сортировки
   const handleSortChange = (value) => {
@@ -58,6 +84,16 @@ export const Filter = () => {
 
     handleSortChange(sortOption); // Применение текущей сортировки к отфильтрованным продуктам
     setFilteredProducts(filtered);
+  };
+
+  // Обработчик добавления и удаления из корзины
+  const handleCartToggle = (product) => {
+    const isInCart = cart.some((item) => item.id === product.id);
+    if (isInCart) {
+      setCart(cart.filter((item) => item.id !== product.id)); // Удаление из корзины
+    } else {
+      setCart([...cart, product]); // Добавление в корзину
+    }
   };
 
   return (
@@ -120,15 +156,18 @@ export const Filter = () => {
 
           {/* Фильтр по категории */}
           <h2 className='text-lg font-semibold mt-4'>Категория</h2>
-          <Select onValueChange={(value) => setCategory(value)}>
+          <Select value={category} onValueChange={(value) => setCategory(value)}>
             <SelectTrigger className='mt-1'>
               <SelectValue placeholder='Выберите категорию' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='all'>Все</SelectItem> {/* Заменено значение с '' на 'all' */}
-              <SelectItem value='Footwear'>Обувь</SelectItem>
-              <SelectItem value='Clothing'>Одежда</SelectItem>
-              <SelectItem value='Accessories'>Аксессуары</SelectItem>
+              <SelectItem value='all'>Все</SelectItem>
+              {categoriesLoaded &&
+                categoriesData?.categories.map((cat) => (
+                  <SelectItem key={cat.name} value={cat.name}>
+                    {cat.name}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
 
@@ -140,29 +179,37 @@ export const Filter = () => {
 
         {/* Блок отображения товаров */}
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-          {isLoading ? (
+          {productsLoading ? (
             <p className='col-span-full text-center'>Загрузка...</p>
           ) : filteredProducts?.length ? (
-            filteredProducts.map(({id, images, name, price}) => (
-              <div key={id} className='flex flex-col items-center'>
-                <Link href={`/products?id=${id}`} className='w-full'>
-                  {' '}
-                  <div
-                    className='bg-gray-300 h-72 rounded-xl w-full mb-4'
-                    style={{
-                      backgroundImage: `url(${JSON.parse(images)[0].url})`,
-                      backgroundSize: 'contain',
-                      backgroundPosition: 'center'
-                    }}
-                  ></div>
-                  <h3 className='text-lg font-semibold'>{name}</h3>
-                  <p className='font-semibold opacity-70'>{price.toLocaleString()} R</p>
-                </Link>
-                <Button variant='secondary' className='mt-3 w-full'>
-                  В корзину
-                </Button>
-              </div>
-            ))
+            filteredProducts.map((product) => {
+              const {id, images, name, price} = product;
+              const isInCart = cart.some((item) => item.id === id);
+
+              return (
+                <div key={id} className='flex flex-col items-center'>
+                  <Link href={`/products?id=${id}`} className='w-full'>
+                    <div
+                      className='bg-gray-300 h-72 rounded-xl w-full mb-4'
+                      style={{
+                        backgroundImage: `url(${JSON.parse(images)[0].url})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center'
+                      }}
+                    ></div>
+                    <h3 className='text-lg font-semibold'>{name}</h3>
+                    <p className='font-semibold opacity-70'>{price.toLocaleString()} R</p>
+                  </Link>
+                  <Button
+                    variant={isInCart ? 'destructive' : 'secondary'}
+                    className='mt-3 w-full'
+                    onClick={() => handleCartToggle(product)}
+                  >
+                    {isInCart ? 'Удалить из корзины' : 'В корзину'}
+                  </Button>
+                </div>
+              );
+            })
           ) : (
             <p className='col-span-full text-center'>Продукты не найдены.</p>
           )}
