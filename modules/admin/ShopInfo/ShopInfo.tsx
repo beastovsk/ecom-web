@@ -87,7 +87,7 @@ export const ShopInfo: React.FC = () => {
 
     if (data?.isCreated) {
       // Update existing main
-      update({id: data.main[0].id, ...jsonData});
+      update({id: data.main[0].id, mainData: jsonData});
     } else {
       // Create new main
       create(jsonData);

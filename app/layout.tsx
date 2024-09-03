@@ -36,12 +36,6 @@ const gilroy = localFont({
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: 'ECOM',
-    template: `%s | Магазин`
-  },
-  description: 'Шаблон магазина',
-  keywords: keywords,
   robots: {
     index: true,
     follow: true

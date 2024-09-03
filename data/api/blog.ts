@@ -44,7 +44,7 @@ export const getAllBlogs = async () => {
 };
 
 // Update a blog
-export const updateBlog = async (id, title, content, images) => {
+export const updateBlog = async (id, rest) => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blog/updateBlog/${id}`, {
       method: 'PUT',
@@ -52,7 +52,7 @@ export const updateBlog = async (id, title, content, images) => {
         Accept: 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({title, content, images})
+      body: JSON.stringify(rest)
     });
 
     if (!response.ok) {
