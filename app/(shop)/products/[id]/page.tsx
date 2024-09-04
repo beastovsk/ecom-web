@@ -48,7 +48,8 @@ export async function generateMetadata({params}: {params: {id: string}}): Promis
       images
     },
     jsonLd: {
-      '@type': 'Продукт',
+      '@context': 'https://schema.org',
+      '@type': 'Product',
       name: product.name,
       description: product.description,
       image: images[0].url,
@@ -65,7 +66,7 @@ export async function generateMetadata({params}: {params: {id: string}}): Promis
 export default async function Page({params}: {params: {id: string}}) {
   // Получаем данные продукта
   const {product} = await getProductById(params.id);
-  console.log(product);
+
   return (
     <div className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8'>
       {/* Передаем данные продукта в компонент ProductDetails */}
