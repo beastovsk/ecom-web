@@ -110,7 +110,7 @@ export const Blog: React.FC = () => {
   };
 
   if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error fetching blogs: {error.message}</p>;
+  if (error) return <p>Произошла ошибка</p>;
 
   return (
     <div>

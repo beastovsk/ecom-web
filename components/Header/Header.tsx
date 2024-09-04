@@ -1,24 +1,29 @@
 'use client'; // Необходим для компонентов, которые используют интерактивные элементы
 
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import Link from 'next/link';
 import {Menu, ShoppingCart, UserCircle} from 'lucide-react';
 import {Sheet, SheetContent, SheetTrigger} from '@/components/ui/sheet';
-import {useQuery} from 'react-query';
-import {GetUser} from '@/data/api/user';
 import {getCookie} from 'cookies-next';
-import {useRouter} from 'next/navigation';
 import {Button} from '../ui/button';
+import Image from 'next/image';
 
-export const Header = () => {
-  const token = getCookie('token');
+export const Header = ({shop}) => {
+  const [token, setToken] = useState(null); // Используем состояние для токена
+
+  useEffect(() => {
+    // Получаем токен только на клиенте
+    const userToken = getCookie('token');
+    setToken(userToken);
+  }, []); // Пустой массив зависимостей чтобы эффект выполнялся только один раз на монтирование компонента
 
   return (
     <header className='flex items-center justify-between p-4 shadow-sm'>
       {/* Лого */}
       <div className='flex items-center space-x-2'>
-        {/* Абстрактный логотип */}
-        <span className='font-bold text-lg'>Лого</span>
+        {/* Проверяем, что логотип доступен перед рендерингом */}
+        {shop.logo && <Image src={shop.logo} alt={shop.name} width={50} height={50} />}
+        <span className='font-bold text-lg'>{shop.name}</span>
       </div>
 
       {/* Навигация */}
@@ -29,9 +34,6 @@ export const Header = () => {
         <Link href='/products' className='opacity-70 hover:opacity-90'>
           Продукты
         </Link>
-        {/* <Link href='/contacts' className='opacity-70 hover:opacity-90'>
-          Контакты
-        </Link> */}
         <Link href='/blog' className='opacity-70 hover:opacity-90'>
           Блог
         </Link>
@@ -39,25 +41,27 @@ export const Header = () => {
 
       {/* Иконки справа */}
       <div className='flex items-center space-x-4'>
-        {' '}
-        {token ? (
-          <Link href='/profile' className='opacity-70 hover:opacity-90'>
-            <UserCircle size={24} />
-          </Link>
-        ) : (
-          <Link href='/login'>
-            <Button>Войти</Button>
-          </Link>
-        )}
+        <div>
+          {token ? (
+            <Link href='/profile' className='opacity-70 hover:opacity-90'>
+              <UserCircle size={24} />
+            </Link>
+          ) : (
+            <Link href='/login'>
+              <Button>Войти</Button>
+            </Link>
+          )}
+        </div>
         <Link href='/cart' className='opacity-70 hover:opacity-90'>
           <ShoppingCart size={24} />
         </Link>
+
         {/* Бургер-меню для мобильных устройств */}
         <Sheet>
           <SheetTrigger className='md:hidden'>
             <Menu size={24} className='opacity-70 hover:opacity-90' />
           </SheetTrigger>
-          <SheetContent className=''>
+          <SheetContent>
             <nav className='flex flex-col space-y-4'>
               <Link href='/' className='text-lg opacity-70 hover:opacity-90'>
                 Главная

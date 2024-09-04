@@ -103,7 +103,7 @@ export const Banner: React.FC = () => {
   };
 
   if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error fetching banners: {error.message}</p>;
+  if (error) return <p>Ошибка</p>;
 
   return (
     <div>

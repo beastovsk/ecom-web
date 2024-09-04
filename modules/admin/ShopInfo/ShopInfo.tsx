@@ -123,7 +123,8 @@ export const ShopInfo: React.FC = () => {
           <div className='mb-4'>
             <label className='block text-sm font-semibold mb-2'>Логотип</label>
             <Upload beforeUpload={handleLogoUpload} showUploadList={false}>
-              <Button icon={<UploadOutlined />} className='border p-2 w-full'>
+              <Button className='border p-2 w-full'>
+                <UploadOutlined />
                 Загрузить логотип
               </Button>
             </Upload>

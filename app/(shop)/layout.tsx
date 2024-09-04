@@ -34,12 +34,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({children}: {children: React.ReactNode}) {
+export default async function RootLayout({children}: {children: React.ReactNode}) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/getMain`);
+  const data = await response.json();
+  const shop = data.main[0];
+
   return (
     <div className='flex min-h-screen flex-col'>
-      <Header />
+      <Header shop={shop} />
       <main className='flex-grow'>{children}</main>
-      <Footer />
+      <Footer shop={shop} />
     </div>
   );
 }
