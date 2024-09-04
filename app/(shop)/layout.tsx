@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: {
       default: shop.name || 'Shop',
-      template: `%s | Магазин`
+      template: `%s | ${shop.name}`
     },
     description: shop.description || 'Онлайн-магазин',
     keywords: shop.seo_tags ? shop.seo_tags.split(',') : [] || [],

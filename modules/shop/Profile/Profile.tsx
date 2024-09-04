@@ -7,10 +7,32 @@ import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
 import {getUserOrders} from '@/data/api/order';
 import {formatProductPrice} from '@/src/helpers/hooks';
+import {useEffect} from 'react';
+import {useRouter} from 'next/navigation';
+import {deleteCookie, getCookie, setCookie} from 'cookies-next';
+import {useToast} from '@/components/ui/use-toast';
 
 export const Profile = () => {
   // Получаем заказы через react-query
   const {data, isSuccess, isLoading, error} = useQuery('userOrders', getUserOrders);
+  const router = useRouter();
+  const token = getCookie('token');
+  const {toast} = useToast();
+
+  useEffect(() => {
+    if (!isSuccess) return;
+
+    if (data) return;
+
+    if (!token) {
+      router.push('/login');
+    }
+
+    if (token) {
+      deleteCookie('token');
+      toast({title: 'Уведомление', description: 'Сессия была завершена, пожалуйста перезайдите'});
+    }
+  }, [data, isSuccess]);
 
   if (isLoading) return <p>Загрузка...</p>;
   if (error) return <p>Ошибка загрузки заказов</p>;

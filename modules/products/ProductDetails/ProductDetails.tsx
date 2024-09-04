@@ -7,11 +7,7 @@ import {Button} from '@/components/ui/button';
 import Image from 'next/image';
 import {getProductById} from '@/data/api/products';
 import parse from 'html-react-parser';
-export const ProductDetails = ({id}) => {
-  const {data, isSuccess, isLoading} = useQuery(['product', id], () => getProductById({id}), {
-    enabled: !!id // Запускаем запрос только если id существует
-  });
-
+export const ProductDetails = ({product}) => {
   const [quantity, setQuantity] = useState(1);
   const [isInCart, setIsInCart] = useState(false);
 
@@ -32,20 +28,20 @@ export const ProductDetails = ({id}) => {
   };
 
   useEffect(() => {
-    if (isSuccess && data) {
+    if (product) {
       const cart = getCartFromLocalStorage();
-      const productInCart = cart.find((item) => item.id === data.id);
+      const productInCart = cart.find((item) => item.id === product.id);
       setQuantity(productInCart ? productInCart.quantity : 1);
       setIsInCart(!!productInCart);
     }
-  }, [data, isSuccess]);
+  }, [product]);
 
   const handleQuantityChange = (change) => {
     const newQuantity = Math.max(quantity + change, 1);
     setQuantity(newQuantity);
     if (isInCart) {
       const cart = getCartFromLocalStorage();
-      const updatedCart = cart.map((item) => (item.id === data.id ? {...item, quantity: newQuantity} : item));
+      const updatedCart = cart.map((item) => (item.id === product.id ? {...item, quantity: newQuantity} : item));
       updateCartInLocalStorage(updatedCart);
     }
   };
@@ -54,13 +50,12 @@ export const ProductDetails = ({id}) => {
     const cart = getCartFromLocalStorage();
     if (isInCart) {
       // Удалить из корзины
-      const updatedCart = cart.filter((item) => item.id !== data.product.id);
+      const updatedCart = cart.filter((item) => item.id !== product.id);
       updateCartInLocalStorage(updatedCart);
       setIsInCart(false);
       setQuantity(1); // Сброс количества после удаления
     } else {
       // Добавить в корзину
-      const {product} = data;
       const newCartItem = {
         id: product.id,
         quantity,
@@ -72,10 +67,9 @@ export const ProductDetails = ({id}) => {
     }
   };
 
-  if (isLoading) return <p>Загрузка...</p>;
-  if (!isSuccess) return <p>Не удалось загрузить информацию о продукте</p>;
+  // if (isLoading) return <p>Загрузка...</p>;
+  // if (!isSuccess) return <p>Не удалось загрузить информацию о продукте</p>;
 
-  const {product} = data;
 
   return (
     <div>
