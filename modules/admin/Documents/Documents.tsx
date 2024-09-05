@@ -3,9 +3,9 @@ import React, {useState} from 'react';
 import {useQuery, useMutation, useQueryClient} from 'react-query';
 import {CustomEditor} from '@/components/CustomEditor';
 import {Button} from '@/components/ui/button';
-import {Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
+import {Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
 import {Input} from '@/components/ui/input';
-import {createDocument, updateDocument, getDocuments} from '@/data/api/documents';
+import {createDocument, updateDocument, getDocuments, deleteDocument} from '@/data/api/documents';
 
 export const Documents: React.FC = () => {
   const queryClient = useQueryClient();
@@ -13,13 +13,14 @@ export const Documents: React.FC = () => {
   const [editDocument, setEditDocument] = useState<{id: number; name: string; content: string} | null>(null);
 
   // Fetch documents
-  const {data, isLoading, isError} = useQuery('documents', getDocuments);
+  const {data, isLoading, isError, refetch} = useQuery('documents', getDocuments);
 
   // Create document mutation
   const createMutation = useMutation(createDocument, {
     onSuccess: () => {
       queryClient.invalidateQueries('documents');
       setNewDocument({name: '', content: ''});
+      refetch();
     }
   });
 
@@ -30,32 +31,32 @@ export const Documents: React.FC = () => {
       onSuccess: () => {
         queryClient.invalidateQueries('documents');
         setEditDocument(null);
+        refetch();
       }
     }
   );
 
   // Delete document mutation
-  // const deleteMutation = useMutation((id: number) => deleteDocument(id), {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries('documents');
-  //   }
-  // });
+  const deleteMutation = useMutation((id: number) => deleteDocument(id), {
+    onSuccess: () => {
+      queryClient.invalidateQueries('documents');
+      refetch();
+    }
+  });
 
   // Handlers
   const handleCreate = (e: React.FormEvent) => {
-    e.preventDefault();
     createMutation.mutate(newDocument);
   };
 
   const handleUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
     if (editDocument) {
       updateMutation.mutate({id: editDocument.id, data: {name: editDocument.name, content: editDocument.content}});
     }
   };
 
   const handleDelete = (id: number) => {
-    // deleteMutation.mutate(id);
+    deleteMutation.mutate(id);
   };
 
   if (isLoading) return <p>Loading...</p>;
@@ -102,17 +103,17 @@ export const Documents: React.FC = () => {
                         propsValue={editDocument?.content || ''}
                       />
                       <DialogFooter>
-                        <Button className='mt-10' onClick={handleUpdate}>
-                          Сохранить
-                        </Button>
+                        <DialogClose>
+                          <Button className='mt-10' onClick={handleUpdate}>
+                            Сохранить
+                          </Button>
+                        </DialogClose>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
                   <Dialog>
                     <DialogTrigger>
-                      <button className='text-red-500 hover:underline' onClick={() => handleDelete(document.id)}>
-                        Удалить
-                      </button>
+                      <button className='text-red-500 hover:underline'>Удалить</button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogTitle>Удалить документ?</DialogTitle>
@@ -130,7 +131,7 @@ export const Documents: React.FC = () => {
         </table>
         <div className='mt-4'>
           <h2 className='text-xl font-semibold mb-2'>Добавить новый документ</h2>
-          <form onSubmit={handleCreate}>
+          <div>
             <Input
               type='text'
               placeholder='Название документа'
@@ -139,10 +140,10 @@ export const Documents: React.FC = () => {
               className='border p-2 w-full mb-4'
             />
             <CustomEditor getValue={(value) => setNewDocument((prev) => ({...prev, content: value}))} propsValue='' />
-            <Button type='submit' className='px-4 py-2 rounded-md mt-4'>
+            <Button onClick={handleCreate} type='submit' className='px-4 py-2 rounded-md mt-4'>
               Сохранить
             </Button>
-          </form>
+          </div>
         </div>
       </div>
     </div>

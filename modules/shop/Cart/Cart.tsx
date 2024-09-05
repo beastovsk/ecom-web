@@ -50,6 +50,14 @@ export const Cart = () => {
   };
 
   const handleSubmit = () => {
+    const cart = localStorage.getItem('cart');
+    if (JSON.parse(cart).length === 0) {
+      toast({
+        title: 'Оформление заказа',
+        description: 'Корзина пустая'
+      });
+      return;
+    }
     if (!token) {
       toast({title: 'Оформление заказа', description: 'Для отслеживания заказа - зайдите пожалуйста в профиль '});
       return router.push('/login');

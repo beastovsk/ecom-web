@@ -10,6 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/getMain`);
   const data = await response.json();
   const shop = data.main[0];
+  const parsedLogo = JSON.parse(JSON.parse(shop.logo));
 
   return {
     title: {
@@ -23,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
       follow: true
     },
     icons: {
-      icon: JSON.parse(shop.logo).url || '/favicon.ico'
+      icon: parsedLogo || '/favicon.ico'
     },
     viewport: {
       width: 'device-width',

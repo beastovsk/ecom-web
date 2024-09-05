@@ -9,6 +9,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/c
 import {getAllProducts} from '@/data/api/products'; // Импорт функции для получения продуктов с бэка
 import {getCategories} from '@/data/api/categories'; // Импорт функции для получения категорий с бэка
 import Link from 'next/link';
+import {ProductCard} from '@/modules/shop/ProductCard/ProductCard';
 
 export const Filter = () => {
   // Router для получения search-параметров
@@ -17,11 +18,7 @@ export const Filter = () => {
   const searchParams = useSearchParams();
 
   // Состояния
-  const {
-    data: productsData,
-    isSuccess: productsLoaded,
-    isLoading: productsLoading
-  } = useQuery('products', getAllProducts); // Получение продуктов с бэка
+  const {data: productsData, isSuccess: productsLoaded} = useQuery('products', getAllProducts); // Получение продуктов с бэка
   const {data: categoriesData, isSuccess: categoriesLoaded} = useQuery('categories', getCategories); // Получение категорий с бэка
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -50,27 +47,9 @@ export const Filter = () => {
   // Обновление фильтров
   useEffect(() => {
     handleFilterProducts();
-  }, [category, priceRange, searchQuery]);
+  }, [category, priceRange, searchQuery, sortOption]); // Добавил сортировку в зависимости для обновления
 
-  // Обработчик сортировки
-  const handleSortChange = (value) => {
-    setSortOption(value);
-    let sortedProducts = [...filteredProducts];
-
-    switch (value) {
-      case 'price-desc':
-        sortedProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
-        break;
-      case 'price-asc':
-        sortedProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-        break;
-      default:
-        break;
-    }
-    setFilteredProducts(sortedProducts);
-  };
-
-  // Фильтрация продуктов по цене и категории
+  // Фильтрация продуктов по цене, категории и строке поиска
   const handleFilterProducts = () => {
     let filtered = products?.filter((product) => {
       const matchesPrice =
@@ -82,8 +61,19 @@ export const Filter = () => {
       return matchesPrice && matchesCategory && matchesSearch;
     });
 
-    handleSortChange(sortOption); // Применение текущей сортировки к отфильтрованным продуктам
+    // Применение текущей сортировки к отфильтрованным продуктам
+    if (sortOption === 'price-desc') {
+      filtered.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+    } else if (sortOption === 'price-asc') {
+      filtered.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+    }
+
     setFilteredProducts(filtered);
+  };
+
+  // Обработчик изменения сортировки
+  const handleSortChange = (value) => {
+    setSortOption(value);
   };
 
   // Обработчик добавления и удаления из корзины
@@ -179,36 +169,9 @@ export const Filter = () => {
 
         {/* Блок отображения товаров */}
         <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-          {productsLoading ? (
-            <p className='col-span-full text-center'>Загрузка...</p>
-          ) : filteredProducts?.length ? (
+          {productsLoaded && filteredProducts.length ? (
             filteredProducts.map((product) => {
-              const {id, images, name, price} = product;
-              const isInCart = cart.some((item) => item.id === id);
-
-              return (
-                <div key={id} className='flex flex-col items-center'>
-                  <Link href={`/products?id=${id}`} className='w-full'>
-                    <div
-                      className='bg-gray-300 h-72 rounded-xl w-full mb-4'
-                      style={{
-                        backgroundImage: `url(${JSON.parse(images)[0].url})`,
-                        backgroundSize: 'contain',
-                        backgroundPosition: 'center'
-                      }}
-                    ></div>
-                    <h3 className='text-lg font-semibold'>{name}</h3>
-                    <p className='font-semibold opacity-70'>{price.toLocaleString()} R</p>
-                  </Link>
-                  <Button
-                    variant={isInCart ? 'destructive' : 'secondary'}
-                    className='mt-3 w-full'
-                    onClick={() => handleCartToggle(product)}
-                  >
-                    {isInCart ? 'Удалить из корзины' : 'В корзину'}
-                  </Button>
-                </div>
-              );
+              return <ProductCard key={product.id} product={product} />;
             })
           ) : (
             <p className='col-span-full text-center'>Продукты не найдены.</p>

@@ -50,7 +50,7 @@ export const Orders: React.FC = () => {
                           <ul className='list-disc list-inside'>
                             {JSON.parse(order.products).map((product) => (
                               <li key={product.product_id} className='mb-2'>
-                                {product.product_name} - {product.quantity} шт. по {product.price} руб.
+                                {product.name} - {product.quantity} шт. по {product.price} руб.
                               </li>
                             ))}
                           </ul>

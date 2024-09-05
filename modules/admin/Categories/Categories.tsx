@@ -3,7 +3,7 @@
 import React, {useState} from 'react';
 import {useQuery, useMutation, useQueryClient} from 'react-query';
 import {Button} from '@/components/ui/button';
-import {Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
+import {Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
 import {Input} from '@/components/ui/input';
 import {createCategory, updateCategory, deleteCategory, getCategories} from '@/data/api/categories';
 
@@ -13,13 +13,14 @@ export const Categories: React.FC = () => {
   const [newCategoryName, setNewCategoryName] = useState('');
 
   // Получение категорий
-  const {data, isLoading, isError} = useQuery('categories', getCategories);
+  const {data, isLoading, isError, refetch} = useQuery('categories', getCategories);
 
   // Мутация для создания категории
   const createMutation = useMutation(createCategory, {
     onSuccess: () => {
       queryClient.invalidateQueries('categories');
       setNewCategoryName('');
+      refetch();
     }
   });
 
@@ -28,6 +29,7 @@ export const Categories: React.FC = () => {
     onSuccess: () => {
       queryClient.invalidateQueries('categories');
       setEditCategory(null);
+      refetch();
     }
   });
 
@@ -35,6 +37,7 @@ export const Categories: React.FC = () => {
   const deleteMutation = useMutation(deleteCategory, {
     onSuccess: () => {
       queryClient.invalidateQueries('categories');
+      refetch();
     }
   });
 
@@ -45,7 +48,6 @@ export const Categories: React.FC = () => {
   };
 
   const handleUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
     if (editCategory) {
       updateMutation.mutate({id: editCategory.id, name: editCategory.name});
     }
@@ -91,7 +93,9 @@ export const Categories: React.FC = () => {
                         onChange={(e) => setEditCategory({...editCategory!, name: e.target.value})}
                       />
                       <DialogFooter>
-                        <Button onClick={handleUpdate}>Сохранить</Button>
+                        <DialogClose asChild>
+                          <Button onClick={handleUpdate}>Сохранить</Button>
+                        </DialogClose>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>

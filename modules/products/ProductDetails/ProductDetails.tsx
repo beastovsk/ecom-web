@@ -7,6 +7,7 @@ import {Button} from '@/components/ui/button';
 import Image from 'next/image';
 import {getProductById} from '@/data/api/products';
 import parse from 'html-react-parser';
+import {Dialog, DialogContent, DialogTrigger} from '@/components/ui/dialog';
 export const ProductDetails = ({product}) => {
   const [quantity, setQuantity] = useState(1);
   const [isInCart, setIsInCart] = useState(false);
@@ -70,7 +71,6 @@ export const ProductDetails = ({product}) => {
   // if (isLoading) return <p>Загрузка...</p>;
   // if (!isSuccess) return <p>Не удалось загрузить информацию о продукте</p>;
 
-
   return (
     <div>
       <div className='container mx-auto p-8 grid grid-cols-1 md:grid-cols-2 gap-8'>
@@ -92,14 +92,30 @@ export const ProductDetails = ({product}) => {
             {JSON.parse(product.images)
               .slice(1)
               .map(({url}, index) => (
-                <Image
-                  key={index}
-                  src={url}
-                  alt={`Product preview ${index + 1}`}
-                  width={60}
-                  height={60}
-                  className='cursor-pointer rounded-lg border border-gray-200'
-                />
+                <Dialog>
+                  <DialogTrigger>
+                    {' '}
+                    <Image
+                      key={index}
+                      src={url}
+                      alt={`Product preview ${index + 1}`}
+                      width={60}
+                      height={60}
+                      className='cursor-pointer rounded-lg border border-gray-200'
+                    />
+                  </DialogTrigger>
+                  <DialogContent>
+                    <Image
+                      key={index}
+                      src={url}
+                      alt={`Product preview ${index + 1}`}
+                      width={1000}
+                      height={1000}
+                      quality={100}
+                      className='cursor-pointer rounded-lg'
+                    />
+                  </DialogContent>
+                </Dialog>
               ))}
           </div>
         </div>
@@ -108,7 +124,7 @@ export const ProductDetails = ({product}) => {
         <div className='flex flex-col space-y-4'>
           {/* Название и цена */}
           <h1 className='text-3xl font-semibold'>{product.name}</h1>
-          <p className='text-xl text-gray-600'>Р {Number(product.price).toFixed(2)}</p>
+          <p className='text-xl text-gray-600'>₽ {Number(product.price).toFixed(2)}</p>
 
           {/* Рейтинг
           <div className='flex items-center'>
@@ -125,7 +141,7 @@ export const ProductDetails = ({product}) => {
 
           {/* Кнопки "Добавить в корзину" и управление количеством */}
           <div className='flex space-x-4 items-center'>
-            <div className='flex items-center border border-gray-300 rounded-md px-3 py-0'>
+            <div className='h-[36px] flex items-center border border-gray-300 rounded-md px-3 py-0'>
               <button onClick={() => handleQuantityChange(-1)} className='text-lg'>
                 -
               </button>

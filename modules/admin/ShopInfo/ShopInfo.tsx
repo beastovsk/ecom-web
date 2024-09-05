@@ -40,7 +40,7 @@ export const ShopInfo: React.FC = () => {
       setFormData({
         name: mainData.name || '',
         description: mainData.description || '',
-        logo: parsedLogo.url || '', // Existing logo URL to be shown in UI
+        logo: parsedLogo?.url || '', // Existing logo URL to be shown in UI
         seo_tags: mainData.seo_tags || '',
         address: mainData.address || '',
         email: mainData.email || '',

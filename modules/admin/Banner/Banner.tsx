@@ -24,7 +24,7 @@ export const Banner: React.FC = () => {
   } | null>(null);
 
   // Fetch banners
-  const {data, isLoading, error} = useQuery('banners', getBanners);
+  const {data, isLoading, error, refetch} = useQuery('banners', getBanners);
 
   // Mutation for creating a new banner
   const mutationCreate = useMutation(createBanner, {
@@ -32,6 +32,7 @@ export const Banner: React.FC = () => {
       queryClient.invalidateQueries('banners');
       // Clear form state after successful creation
       setFormState({name: '', img: ''});
+      refetch();
     }
   });
 
@@ -50,6 +51,7 @@ export const Banner: React.FC = () => {
   const mutationDelete = useMutation(deleteBanner, {
     onSuccess: () => {
       queryClient.invalidateQueries('banners');
+      refetch();
     }
   });
 
@@ -129,43 +131,6 @@ export const Banner: React.FC = () => {
                   <td className='p-2'>
                     <Dialog>
                       <DialogTrigger>
-                        <button
-                          className='text-blue-600 hover:underline mr-4'
-                          onClick={() => setEditState({id: banner.id, name: banner.name, img: imageUrl})}
-                        >
-                          Изменить
-                        </button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogTitle>Изменить баннер</DialogTitle>
-                        <Input
-                          type='text'
-                          placeholder='Название баннера'
-                          name='name'
-                          value={editState?.name || ''}
-                          onChange={handleEditChange}
-                          className='border p-2 w-full mb-4'
-                        />
-                        <Upload
-                          customRequest={() => {}}
-                          onChange={(info) => handleImageChange(info, true)}
-                          showUploadList={false}
-                          accept='image/*'
-                        >
-                          <Button type='button' className='mb-4'>
-                            Загрузить изображение
-                          </Button>
-                        </Upload>
-                        {editState?.img && <img src={editState.img} alt='Selected' className='w-32 mb-4' />}
-                        <DialogFooter>
-                          <Button className='mt-10' onClick={handleUpdateBanner}>
-                            Сохранить
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                    <Dialog>
-                      <DialogTrigger>
                         <button className='text-red-500 hover:underline mr-4'>Удалить</button>
                       </DialogTrigger>
                       <DialogContent>
@@ -195,17 +160,19 @@ export const Banner: React.FC = () => {
               className='border p-2 w-full mb-4'
               required
             />
-            <Upload
-              customRequest={() => {}}
-              onChange={(info) => handleImageChange(info)}
-              showUploadList={false}
-              accept='image/*'
-            >
-              <Button type='button' className='mb-4'>
-                Загрузить изображение
-              </Button>
-            </Upload>
-            {formState.img && <img src={formState.img} alt='Selected' className='w-32 mb-4' />}
+            <div>
+              <Upload
+                customRequest={() => {}}
+                onChange={(info) => handleImageChange(info)}
+                showUploadList={false}
+                accept='image/*'
+              >
+                <Button type='button' className='mb-4'>
+                  Загрузить изображение
+                </Button>
+              </Upload>
+              {formState.img && <img src={formState.img} alt='Selected' className='w-32 mb-4' />}
+            </div>
             <Button type='submit' className='px-4 py-2 rounded-md'>
               Сохранить
             </Button>

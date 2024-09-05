@@ -6,11 +6,13 @@ import {Textarea} from '@/components/ui/textarea';
 import {deleteProduct, getAllProducts, updateProduct, createProduct} from '@/data/api/products';
 import React, {useEffect, useState} from 'react';
 import {useMutation, useQuery} from 'react-query';
-import {Dialog, DialogTrigger, DialogContent} from '@/components/ui/dialog';
+import {Dialog, DialogTrigger, DialogContent, DialogClose} from '@/components/ui/dialog';
 import {Plus} from 'lucide-react';
 import {CustomEditor} from '@/components/CustomEditor';
 import {Image, Upload} from 'antd';
 import type {GetProp, UploadFile, UploadProps} from 'antd';
+import {getCategories} from '@/data/api/categories';
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -23,25 +25,20 @@ const getBase64 = (file: FileType): Promise<string> =>
   });
 
 export const Products: React.FC = () => {
-  // Получение списка продуктов с сервера
   const {data, refetch} = useQuery('products', getAllProducts);
 
-  // Мутации для удаления, обновления и создания продукта
   const deleteMutation = useMutation(deleteProduct, {onSuccess: () => refetch()});
   const updateMutation = useMutation(updateProduct, {onSuccess: () => refetch()});
   const createMutation = useMutation(createProduct, {onSuccess: () => refetch()});
 
-  // Обработчик удаления продукта
   const handleDelete = (productId: number) => {
     deleteMutation.mutate({id: productId});
   };
 
-  // Обработчик обновления продукта
   const handleUpdate = (product: any) => {
     updateMutation.mutate(product);
   };
 
-  // Обработчик создания продукта
   const handleCreate = (product: any) => {
     createMutation.mutate(product);
   };
@@ -105,13 +102,14 @@ export const Products: React.FC = () => {
 
 // Компонент формы продукта
 const ProductForm: React.FC<{initialData?: any; onSubmit: (data: any) => void}> = ({
-  initialData = {name: '', description: '', detailed_description: '', price: '', tags: '', category: '', images: []},
+  initialData = {name: '', description: '', detailed_description: '', price: '', tags: '', category: '', images: ''},
   onSubmit
 }) => {
   const [productData, setProductData] = useState(initialData);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const {data} = useQuery('categories', getCategories);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProductData({
@@ -120,10 +118,17 @@ const ProductForm: React.FC<{initialData?: any; onSubmit: (data: any) => void}> 
     });
   };
 
+  const handleCategoryChange = (value: string) => {
+    setProductData({
+      ...productData,
+      category: value
+    });
+  };
+
   useEffect(() => {
-    if (!initialData.images.length || !initialData.images) return;
-    console.log(initialData);
-    setFileList(JSON.parse(initialData.images));
+    if (!initialData.images) return;
+    const images = JSON.parse(initialData.images);
+    setFileList(images.map(({url}) => ({thumbUrl: url})));
   }, [initialData]);
 
   const handleEditorChange = (value: string) => {
@@ -146,7 +151,7 @@ const ProductForm: React.FC<{initialData?: any; onSubmit: (data: any) => void}> 
   );
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div>
       <p className='mb-2'>Название</p>
       <Input
         type='text'
@@ -181,21 +186,20 @@ const ProductForm: React.FC<{initialData?: any; onSubmit: (data: any) => void}> 
         </Upload>
       </div>
       <p className='mb-2'>Детальное описание</p>
-      <CustomEditor
-        propsValue={productData.detailed_description}
-        getValue={handleEditorChange}
-        // placeholder='Детальное описание'
-        // className='border p-2 w-full mb-4'
-      />
+      <CustomEditor propsValue={productData.detailed_description} getValue={handleEditorChange} />
       <p className='mb-2 mt-3'>Категория</p>
-      <Input
-        type='text'
-        name='category'
-        value={productData.category}
-        onChange={handleChange}
-        placeholder='Категория'
-        className='border p-2 w-full mb-4'
-      />
+      <Select value={productData.category} onValueChange={handleCategoryChange}>
+        <SelectTrigger className='border p-2 w-full mb-4'>
+          <SelectValue placeholder='Категория' />
+        </SelectTrigger>
+        <SelectContent>
+          {data?.categories.map(({name}) => (
+            <SelectItem key={name} value={name}>
+              {name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       <p className='mb-2'>Теги, через запятую</p>
       <Input
         type='text'
@@ -205,12 +209,11 @@ const ProductForm: React.FC<{initialData?: any; onSubmit: (data: any) => void}> 
         placeholder='Теги'
         className='border p-2 w-full mb-4'
       />
-      {/* <MultiUploader onUpload={handleImageUpload} className='border p-2 w-full mb-4' /> */}
       <div className='flex justify-end space-x-4'>
-        <Button type='submit' className='px-4 py-2 rounded-md'>
+        <Button onClick={handleSubmit} type='submit' className='px-4 py-2 rounded-md'>
           Сохранить
         </Button>
       </div>
-    </form>
+    </div>
   );
 };

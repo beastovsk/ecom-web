@@ -19,11 +19,25 @@ export const updateDocument = async (id, documentData) => {
       Accept: 'application/json',
       'Content-Type': 'application/json'
     },
-    method: 'PUT',
+    method: 'POST',
     body: JSON.stringify(documentData)
   }).then((data) => {
     if (!data.ok) {
       throw new Error('Ошибка при обновлении документа');
+    }
+    return data.json();
+  });
+};
+export const deleteDocument = async (id) => {
+  return await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/deleteDocument/${id}`, {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    method: 'DELETE'
+  }).then((data) => {
+    if (!data.ok) {
+      throw new Error('Ошибка при удалении документа');
     }
     return data.json();
   });
