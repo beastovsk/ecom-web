@@ -59,7 +59,6 @@ export const Order = () => {
           }
         }
       );
-
     } catch (error) {
       console.error('Ошибка при создании заказа:', error);
       alert('Произошла ошибка при отправке заказа. Попробуйте еще раз.');
@@ -74,15 +73,18 @@ export const Order = () => {
         <div className='grid grid-cols-1 sm:grid-cols-2 gap-6'>
           <div>
             <Input placeholder='Имя' {...register('firstName')} />
+            {/* @ts-ignore */}
             {errors.firstName && <p className='text-red-600'>{errors.firstName.message}</p>}
           </div>
           <div>
             <Input placeholder='Фамилия' {...register('lastName')} />
+            {/* @ts-ignore */}
             {errors.lastName && <p className='text-red-600'>{errors.lastName.message}</p>}
           </div>
         </div>
         <div>
           <Input placeholder='Номер телефона' type='tel' {...register('phoneNumber')} />
+          {/* @ts-ignore */}
           {errors.phoneNumber && <p className='text-red-600'>{errors.phoneNumber.message}</p>}
         </div>
         <div>

@@ -1,10 +1,9 @@
-import {ScrollArea} from '@/components/ui/scroll-area';
 import {Banner} from '@/modules/shop/Banner/Banner';
 import {Categories} from '@/modules/shop/Categories/Categories';
 import {Products} from '@/modules/shop/Products/Products';
 import React from 'react';
 
-export default async function Page() {
+export default function Page() {
   return (
     <div className='flex w-full flex-col'>
       <Banner />

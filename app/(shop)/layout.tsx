@@ -9,16 +9,17 @@ export async function generateMetadata(): Promise<Metadata> {
   // Fetch данных с бэкенда
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/getMain`);
   const data = await response.json();
-  const shop = data.main[0];
-  const parsedLogo = JSON.parse(JSON.parse(shop.logo));
+  const shop = data.main?.[0];
+  const parsedLogo = shop?.logo ? JSON.parse(JSON.parse(shop.logo)) : '';
+  const name = shop?.name ? shop.name : 'Shop';
 
   return {
     title: {
-      default: shop.name || 'Shop',
-      template: `%s | ${shop.name}`
+      default: name,
+      template: `%s | ${name}`
     },
-    description: shop.description || 'Онлайн-магазин',
-    keywords: shop.seo_tags ? shop.seo_tags.split(',') : [] || [],
+    description: shop?.description ? shop.description : 'Онлайн-магазин',
+    keywords: shop?.seo_tags ? shop.seo_tags : '',
     robots: {
       index: true,
       follow: true
@@ -38,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/getMain`);
   const data = await response.json();
-  const shop = data.main[0];
+  const shop = data.main?.[0];
 
   return (
     <div className='flex min-h-screen flex-col'>

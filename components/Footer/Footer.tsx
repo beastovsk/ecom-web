@@ -11,7 +11,7 @@ import Image from 'next/image';
 
 export const Footer = ({shop}) => {
   const {data} = useQuery('docs', getDocuments);
-  const parsedLogo = JSON.parse(JSON.parse(shop.logo));
+  const parsedLogo = shop?.logo ? JSON.parse(JSON.parse(shop.logo)) : '';
 
   return (
     <footer className='border-t border-gray-200 py-8'>
@@ -23,15 +23,15 @@ export const Footer = ({shop}) => {
             <div className='flex items-center space-x-2 mb-4'>
               {/* Абстрактное лого */}
               {parsedLogo && (
-                <Image src={parsedLogo.url} alt={shop.name} width={50} height={50} className='rounded-full' />
+                <Image src={parsedLogo.url} alt={shop?.name} width={50} height={50} className='rounded-full' />
               )}
-              <span className='font-bold text-lg'>{shop.name}</span>
+              <span className='font-bold text-lg'>{shop?.name}</span>
             </div>
             {/* Контактная информация */}
             <div className='text-gray-600 space-y-1'>
-              <p>Телефон: {shop.phone}</p>
-              <p>ИНН: {shop.inn}</p>
-              <p>Адрес: {shop.address}</p>
+              <p>Телефон: {shop?.phone}</p>
+              <p>ИНН: {shop?.inn}</p>
+              <p>Адрес: {shop?.address}</p>
             </div>
           </div>
 

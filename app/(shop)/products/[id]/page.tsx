@@ -4,31 +4,52 @@ import {ProductDetails} from '@/modules/products/ProductDetails/ProductDetails';
 import {Products} from '@/modules/products/Products/Products';
 import React from 'react';
 
-// Функция для получения данных продукта с сервера
 async function getProductById(id: string) {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/getProductById/${id}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    cache: 'no-store' // Это нужно для того, чтобы не кэшировать запрос на стороне сервера
-  });
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/getProductById/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      cache: 'no-store' // Prevent caching of the request on the server side
+    });
 
-  if (!response.ok) {
-    throw new Error('Failed to fetch product data');
+    console.log(`Fetching product data for ID: ${id}`);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch product data: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error in getProductById:', error);
+    return null; // Return null or handle error appropriately
   }
-
-  const data = await response.json();
-  return data;
 }
 
-// Генерация метаданных для SEO на основе данных продукта
 export async function generateMetadata({params}: {params: {id: string}}): Promise<Metadata> {
-  const {product} = await getProductById(params.id);
-  const images = JSON.parse(product.images).map(({url}) => ({url, width: 800, height: 600, alt: product.name}));
+  const productData = await getProductById(params.id);
+
+  if (!productData) {
+    // Fallback metadata if the product data is unavailable
+    return {
+      title: 'Product not found',
+      description: 'The product you are looking for does not exist.'
+    };
+  }
+
+  const {product} = productData;
+  const images = JSON.parse(product.images).map(({url}) => ({
+    url,
+    width: 800,
+    height: 600,
+    alt: product.name
+  }));
+
   return {
-    title: product.name, // Название продукта
-    description: product.description, // Описание продукта
+    title: product.name, // Product title
+    description: product.description, // Product description
     openGraph: {
       title: product.name,
       description: product.description,
@@ -38,7 +59,7 @@ export async function generateMetadata({params}: {params: {id: string}}): Promis
     additionalMetaTags: [
       {
         name: 'price',
-        content: product.price.toString() // Цена продукта
+        content: product.price.toString() // Product price
       }
     ],
     twitter: {
@@ -52,24 +73,29 @@ export async function generateMetadata({params}: {params: {id: string}}): Promis
       '@type': 'Product',
       name: product.name,
       description: product.description,
-      image: images[0].url,
+      image: images[0]?.url,
       offers: {
-        '@type': 'Предложение',
+        '@type': 'Offer',
         price: product.price,
-        priceCurrency: 'RUB' // Замените на нужную валюту
+        priceCurrency: 'RUB' // Replace with the appropriate currency
       }
     }
   };
 }
 
-// Серверная компонента страницы
 export default async function Page({params}: {params: {id: string}}) {
-  // Получаем данные продукта
-  const {product} = await getProductById(params.id);
+  // Get product data
+  const productData = await getProductById(params.id);
+
+  if (!productData) {
+    return <div>Product not found</div>; // Handle the case when the product is not found
+  }
+
+  const {product} = productData;
 
   return (
     <div className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8'>
-      {/* Передаем данные продукта в компонент ProductDetails */}
+      {/* Pass product data to the ProductDetails component */}
       <ProductDetails product={product} />
     </div>
   );
