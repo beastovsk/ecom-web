@@ -10,7 +10,6 @@ import Image from 'next/image';
 
 export const Header = ({shop}) => {
   const [token, setToken] = useState(null); // Используем состояние для токена
-  const parsedLogo = shop?.logo ? JSON.parse(JSON.parse(shop.logo)) : '';
 
   useEffect(() => {
     // Получаем токен только на клиенте
@@ -23,7 +22,7 @@ export const Header = ({shop}) => {
       {/* Лого */}
       <div className='flex items-center space-x-2'>
         {/* Проверяем, что логотип доступен перед рендерингом */}
-        {parsedLogo && <Image src={parsedLogo.url} alt={shop?.name} width={50} height={50} className='rounded-full' />}
+        {shop?.logo && <Image src={shop?.logo} alt={shop?.name} width={50} height={50} className='rounded-full' />}
         <span className='font-bold text-lg'>{shop?.name}</span>
       </div>
 

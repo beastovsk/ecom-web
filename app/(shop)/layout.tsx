@@ -10,22 +10,20 @@ export async function generateMetadata(): Promise<Metadata> {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/getMain`);
   const data = await response.json();
   const shop = data.main?.[0];
-  const parsedLogo = shop?.logo ? JSON.parse(JSON.parse(shop.logo)) : '';
-  const name = shop?.name ? shop.name : 'Shop';
 
   return {
     title: {
-      default: name,
-      template: `%s | ${name}`
+      default: shop?.name,
+      template: `%s | ${shop?.name}`
     },
-    description: shop?.description ? shop.description : 'Онлайн-магазин',
-    keywords: shop?.seo_tags ? shop.seo_tags : '',
+    description: shop?.description,
+    keywords: shop?.seo_tags,
     robots: {
       index: true,
       follow: true
     },
     icons: {
-      icon: parsedLogo || '/favicon.ico'
+      icon: shop?.logo || '/favicon.ico'
     },
     viewport: {
       width: 'device-width',
