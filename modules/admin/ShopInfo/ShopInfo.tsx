@@ -9,6 +9,7 @@ import {useMutation, useQuery} from 'react-query';
 import {Upload, UploadProps} from 'antd';
 import {RcFile} from 'antd/lib/upload';
 import {UploadOutlined} from '@ant-design/icons';
+import {useToast} from '@/components/ui/use-toast';
 
 export const ShopInfo: React.FC = () => {
   const {data, refetch} = useQuery('main', getMain); // Fetch current main data
@@ -18,6 +19,7 @@ export const ShopInfo: React.FC = () => {
   const {mutate: update} = useMutation(updateMain, {
     onSuccess: () => refetch() // Refetch after update
   });
+  const {toast} = useToast();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -36,11 +38,10 @@ export const ShopInfo: React.FC = () => {
     if (data?.isCreated) {
       // Populate form with existing data if record is already created
       const mainData = data.main[0]; // Assuming 'main' is an array with a single object
-      const parsedLogo = JSON.parse(mainData.logo); // Parse the logo JSON string
       setFormData({
         name: mainData.name || '',
         description: mainData.description || '',
-        logo: parsedLogo?.url || '', // Existing logo URL to be shown in UI
+        logo: mainData.logo || '', // Existing logo URL to be shown in UI
         seo_tags: mainData.seo_tags || '',
         address: mainData.address || '',
         email: mainData.email || '',
@@ -72,7 +73,7 @@ export const ShopInfo: React.FC = () => {
     const {name, description, seo_tags, address, email, phone, inn} = formData;
 
     // If logo is updated, use base64, otherwise use existing URL
-    const logoToSend = isLogoUpdated ? formData.logo : JSON.parse(data.main[0].logo).url;
+    const logoToSend = isLogoUpdated ? formData.logo : '';
 
     const jsonData = {
       name,
@@ -87,10 +88,21 @@ export const ShopInfo: React.FC = () => {
 
     if (data?.isCreated) {
       // Update existing main
-      update({id: data.main[0].id, mainData: jsonData});
+      update(
+        {id: data.main[0].id, mainData: jsonData},
+        {
+          onSuccess: (data) => {
+            toast({title: 'Уведомление об обновлении данных', description: data.message});
+          }
+        }
+      );
     } else {
       // Create new main
-      create(jsonData);
+      create(jsonData, {
+        onSuccess: (data) => {
+          toast({title: 'Уведомление об обновлении данных', description: data.message});
+        }
+      });
     }
   };
 
