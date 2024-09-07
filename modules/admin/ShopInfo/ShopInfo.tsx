@@ -110,7 +110,7 @@ export const ShopInfo: React.FC = () => {
     <div>
       <h1 className='text-2xl font-bold mb-6'>Информация о магазине</h1>
       <div className='p-4 shadow-md rounded-lg'>
-        <form onSubmit={handleSubmit}>
+        <div>
           <div className='mb-4'>
             <label className='block text-sm font-semibold mb-2'>Название магазина</label>
             <Input
@@ -199,10 +199,10 @@ export const ShopInfo: React.FC = () => {
               className='border p-2 w-full'
             />
           </div>
-          <Button type='submit' className='px-4 py-2 rounded-md'>
+          <Button className='px-4 py-2 rounded-md' onClick={handleSubmit}>
             Сохранить
           </Button>
-        </form>
+        </div>
       </div>
     </div>
   );
