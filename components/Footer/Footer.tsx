@@ -57,7 +57,7 @@ export const Footer = ({shop}) => {
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>{document.name}</DialogHeader>
-                      <div className='p-4'>{parse(document.content)}</div>
+                      <div className='p-4 overflow-y-auto h-[50vh]'>{parse(document.content)}</div>
                     </DialogContent>
                   </Dialog>
                 ))}

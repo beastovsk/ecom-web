@@ -10,7 +10,7 @@ import parse from 'html-react-parser';
 const Blog: React.FC = () => {
   // Получаем данные блогов с помощью useQuery
   const {data, isLoading, error} = useQuery('blog', getAllBlogs);
-  // console.log(parse(data.blogs[0].content));
+
   // Обработка состояния загрузки и ошибок
   if (isLoading) return <p>Загрузка...</p>;
   if (error) return <p>Произошла ошибка при загрузке статей.</p>;
@@ -23,7 +23,7 @@ const Blog: React.FC = () => {
           const parsedImage = JSON.parse(post.images);
 
           return (
-            <div key={post.id} className='shadow-md rounded-lg overflow-hidden'>
+            <div key={post.id} className='shadow-md rounded-lg overflow-hidden border'>
               {/* Изображение статьи */}
               <Image
                 src={parsedImage.url}
@@ -40,9 +40,12 @@ const Blog: React.FC = () => {
                 <h2 className='text-2xl font-bold mb-2'>
                   <Link href={`/blog?article=${post.id}`}>{post.title}</Link>
                 </h2>
-                {/* Выводим часть контента статьи или краткое описание */}
-                <p className='text-gray-700 mb-4 h-10'>{parse(post.content)}</p>
-                <Link href={`/blog?article=${post.id}`} className='text-blue-600 hover:underline'>
+                {/* Обрезка текста подзаголовка и добавление троеточия */}
+                <p className='text-gray-700 mb-4 h-24 overflow-hidden line-clamp-3'>{parse(post.content)}</p>
+                <Link
+                  href={`/blog?article=${post.id}`}
+                  className='inline-block mt-4 px-4 py-2 transition duration-300 ease-in-out'
+                >
                   Подробнее
                 </Link>
               </div>

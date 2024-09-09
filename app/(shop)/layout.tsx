@@ -13,17 +13,17 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: {
-      default: shop?.name,
-      template: `%s | ${shop?.name}`
+      default: shop.name || '',
+      template: `%s | ${shop.name || ''}`
     },
-    description: shop?.description,
-    keywords: shop?.seo_tags,
+    description: shop.description || '',
+    keywords: shop.seo_tags || '',
     robots: {
       index: true,
       follow: true
     },
     icons: {
-      icon: shop?.logo || '/favicon.ico'
+      icon: shop.logo || '/favicon.ico'
     }
   };
 }
