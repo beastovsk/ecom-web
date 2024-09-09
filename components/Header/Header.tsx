@@ -14,6 +14,7 @@ import {useCartStore} from '@/data/store/store'; // Импортируйте в�
 export const Header = ({shop}) => {
   const [token, setToken] = useState(null); // Используем состояние для токена
   const {totalQuantity, updateQuantity} = useCartStore(); // Используем Zustand-стор
+  console.log(shop);
 
   useEffect(() => {
     // Получаем токен только на клиенте
