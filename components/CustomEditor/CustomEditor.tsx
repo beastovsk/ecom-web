@@ -1,8 +1,9 @@
-'use client'
+'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import dynamic from 'next/dynamic';
 
 import s from './CustomEditor.module.scss';
 
@@ -13,6 +14,7 @@ type CustomEditorProps = {
 
 export const CustomEditor = ({propsValue, getValue}: CustomEditorProps) => {
   const [value, setValue] = useState(propsValue || '');
+  const ReactQuill = useMemo(() => dynamic(() => import('react-quill'), { ssr: false }),[]);
 
   const handleChange = (e) => {
     setValue(e);

@@ -9,9 +9,6 @@ const nextConfig = {
     }
   },
   // output: 'export',
-  experimental: {
-    appDir: true
-  },
   sassOptions: {
     // eslint-disable-next-line quotes
     prependData: `@use 'src/styles/mixins' as *;`

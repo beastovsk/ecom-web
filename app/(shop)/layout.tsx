@@ -24,12 +24,6 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     icons: {
       icon: shop?.logo || '/favicon.ico'
-    },
-    viewport: {
-      width: 'device-width',
-      initialScale: 1,
-      maximumScale: 1,
-      userScalable: false
     }
   };
 }

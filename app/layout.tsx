@@ -42,23 +42,16 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.ico'
-  },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false
   }
 };
+
+export const viewport = 'width=device-width, initial-scale=1';
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang='en'>
-      <Head>
-        {/* <meta name='yandex-verification' content='c4492d1cc4639f2c' /> */}
-        {/* <YandexMetrika yid={94315700} clickmap={true} trackLinks={true} accurateTrackBounce={true} webvisor={true} /> */}
-        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
-      </Head>
+      {/* <Head>
+      </Head> */}
       <body>
         <main className={gilroy.className}>
           <ClientProvider>{children}</ClientProvider>
