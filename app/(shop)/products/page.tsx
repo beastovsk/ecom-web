@@ -1,10 +1,7 @@
-import {ProductDetails} from '@/modules/products/ProductDetails/ProductDetails';
-import {Products} from '@/modules/products/Products/Products';
 import {Metadata} from 'next';
 import React from 'react';
-
-// Ensure the page is rendered dynamically
-// export const dynamic = 'force-dynamic';
+import {ProductDetails} from '@/modules/products/ProductDetails/ProductDetails';
+import {Products} from '@/modules/products/Products/Products';
 
 async function getProductById(id: string) {
   try {
@@ -24,15 +21,15 @@ async function getProductById(id: string) {
     return data;
   } catch (error) {
     console.error('Error in getProductById:', error);
-    return null; // Return null or handle error appropriately
+    return null;
   }
 }
 
 export async function generateMetadata({searchParams}: {searchParams?: {id: string}}): Promise<Metadata> {
-  if (!searchParams || !searchParams.id) {
+  if (!searchParams?.id) {
     return {
-      title: 'Product List',
-      description: 'List of products in the shop'
+      title: 'Список продуктов',
+      description: 'Список продуктов магазина'
     };
   }
 
@@ -40,8 +37,8 @@ export async function generateMetadata({searchParams}: {searchParams?: {id: stri
 
   if (!productData) {
     return {
-      title: 'Product List',
-      description: 'List of products in the shop'
+      title: 'Список продуктов',
+      description: 'Список продуктов магазина'
     };
   }
 
@@ -61,26 +58,51 @@ export async function generateMetadata({searchParams}: {searchParams?: {id: stri
       description: product.description,
       images
     },
+    // @ts-ignore
+    additionalMetaTags: [
+      {
+        name: 'price',
+        content: product.price.toString()
+      }
+    ],
     twitter: {
       card: 'summary_large_image',
       title: product.name,
       description: product.description,
       images
+    },
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      description: product.description,
+      image: images[0]?.url,
+      offers: {
+        '@type': 'Offer',
+        price: product.price,
+        priceCurrency: 'RUB'
+      }
     }
   };
 }
 
-interface PageProps {
-  searchParams: {id: string};
-}
+export default async function Page({searchParams}: {searchParams?: {id: string}}) {
+  const productId = searchParams?.id;
 
-export default async function Page({searchParams}: PageProps) {
-  const productData = searchParams.id ? await getProductById(searchParams.id) : null;
-
-  if (!productData || !productData.product) {
+  if (!productId) {
     return (
       <div className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8'>
         <Products />
+      </div>
+    );
+  }
+
+  const productData = await getProductById(productId);
+
+  if (!productData) {
+    return (
+      <div className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8'>
+        <p>Product not found.</p>
       </div>
     );
   }
