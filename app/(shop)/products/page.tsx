@@ -3,6 +3,9 @@ import {Products} from '@/modules/products/Products/Products';
 import {Metadata} from 'next';
 import React from 'react';
 
+// Ensure the page is rendered dynamically
+// export const dynamic = 'force-dynamic';
+
 async function getProductById(id: string) {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/product/getProductById/${id}`, {
@@ -26,15 +29,19 @@ async function getProductById(id: string) {
 }
 
 export async function generateMetadata({searchParams}: {searchParams?: {id: string}}): Promise<Metadata> {
-  if (!searchParams.id) return;
+  if (!searchParams || !searchParams.id) {
+    return {
+      title: 'Product List',
+      description: 'List of products in the shop'
+    };
+  }
 
   const productData = await getProductById(searchParams.id);
 
   if (!productData) {
-    // Fallback metadata if the product data is unavailable
     return {
-      title: 'Список продуктов',
-      description: 'Список продуктов магазина'
+      title: 'Product List',
+      description: 'List of products in the shop'
     };
   }
 
@@ -47,45 +54,30 @@ export async function generateMetadata({searchParams}: {searchParams?: {id: stri
   }));
 
   return {
-    title: product.name, // Product title
-    description: product.description, // Product description
+    title: product.name,
+    description: product.description,
     openGraph: {
       title: product.name,
       description: product.description,
       images
     },
-    // @ts-ignore
-    additionalMetaTags: [
-      {
-        name: 'price',
-        content: product.price.toString() // Product price
-      }
-    ],
     twitter: {
       card: 'summary_large_image',
       title: product.name,
       description: product.description,
       images
-    },
-    jsonLd: {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: product.name,
-      description: product.description,
-      image: images[0]?.url,
-      offers: {
-        '@type': 'Offer',
-        price: product.price,
-        priceCurrency: 'RUB' // Replace with the appropriate currency
-      }
     }
   };
 }
 
-export default async function Page({searchParams}: {searchParams?: {id: string}}) {
-  const productData = await getProductById(searchParams.id);
+interface PageProps {
+  searchParams: {id: string};
+}
 
-  if (!productData) {
+export default async function Page({searchParams}: PageProps) {
+  const productData = searchParams.id ? await getProductById(searchParams.id) : null;
+
+  if (!productData || !productData.product) {
     return (
       <div className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8'>
         <Products />
@@ -93,12 +85,9 @@ export default async function Page({searchParams}: {searchParams?: {id: string}}
     );
   }
 
-  const {product} = productData;
-
   return (
     <div className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8'>
-      {/* Pass product data to the ProductDetails component */}
-      <ProductDetails product={product} />
+      <ProductDetails product={productData.product} />
     </div>
   );
 }

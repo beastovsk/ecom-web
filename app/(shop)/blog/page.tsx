@@ -3,6 +3,8 @@ import Article from '@/modules/shop/Article/Article';
 import React from 'react';
 import Blog from '@/modules/shop/Blog/Blog';
 
+export const dynamic = 'force-dynamic';
+
 async function getBlogById(id: string) {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/blog/getBlogById/${id}`, {
