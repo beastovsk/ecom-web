@@ -70,9 +70,9 @@ export const Footer = ({shop}) => {
         <div className='border-t border-gray-200 pt-4 text-center text-sm text-gray-500'>
           <p>© 2024 Все права защищены.</p>
           <p>
-            Разработка сайта -{' '}
-            <Link href='https://t.me/beastovsk' className='underline'>
-              https://t.me/beastovsk
+            Качественные интернет магазины -{' '}
+            <Link href='https://ecom-store.ru' className='underline hover:text-blue-300 transition-colors'>
+              https://ecom-store.ru
             </Link>
           </p>
         </div>
