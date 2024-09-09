@@ -1,9 +1,0 @@
-[[redirects]]
-  from = "/products/*"
-  to = "/products/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/blog/*"
-  to = "/blog/:splat"
-  status = 200

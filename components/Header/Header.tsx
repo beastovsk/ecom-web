@@ -7,15 +7,36 @@ import {Sheet, SheetContent, SheetTrigger} from '@/components/ui/sheet';
 import {getCookie} from 'cookies-next';
 import {Button} from '../ui/button';
 import Image from 'next/image';
+import {Badge} from 'antd';
+import {Skeleton} from '../ui/skeleton';
+import {useCartStore} from '@/data/store/store'; // Импортируйте ваш Zustand-стор
 
 export const Header = ({shop}) => {
   const [token, setToken] = useState(null); // Используем состояние для токена
+  const {totalQuantity, updateQuantity} = useCartStore(); // Используем Zustand-стор
 
   useEffect(() => {
     // Получаем токен только на клиенте
     const userToken = getCookie('token');
     setToken(userToken);
-  }, []); // Пустой массив зависимостей чтобы эффект выполнялся только один раз на монтирование компонента
+
+    // Обновляем количество товаров в корзине при монтировании
+    const updateCartQuantity = () => {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
+      updateQuantity(totalQuantity);
+    };
+
+    updateCartQuantity(); // Инициализация количества
+
+    // Обработчик события изменения localStorage
+    window.addEventListener('storage', updateCartQuantity);
+
+    // Очистка обработчика при размонтировании компонента
+    return () => {
+      window.removeEventListener('storage', updateCartQuantity);
+    };
+  }, [updateQuantity]); // Пустой массив зависимостей чтобы эффект выполнялся только один раз на монтирование компонента
 
   return (
     <header className='flex items-center justify-between p-4 shadow-sm'>
@@ -52,8 +73,11 @@ export const Header = ({shop}) => {
             </Link>
           )}
         </div>
+
         <Link href='/cart' className='opacity-70 hover:opacity-90'>
-          <ShoppingCart size={24} />
+          <Badge count={totalQuantity} className='mr-2 text-inherit'>
+            <ShoppingCart size={24} />
+          </Badge>
         </Link>
 
         {/* Бургер-меню для мобильных устройств */}

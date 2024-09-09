@@ -36,18 +36,13 @@ export const Filter = () => {
     setFilteredProducts(products); // Изначально отображаем все продукты
   }, [productsData, productsLoaded]);
 
-  // Установка категории из URL при первой загрузке
+  // Сохранение фильтров и сортировки при загрузке
   useEffect(() => {
     const categoryFromURL = searchParams.get('category');
     if (categoryFromURL) {
       setCategory(categoryFromURL);
     }
   }, [searchParams]);
-
-  // Обновление фильтров
-  useEffect(() => {
-    handleFilterProducts();
-  }, [category, priceRange, searchQuery, sortOption]); // Добавил сортировку в зависимости для обновления
 
   // Фильтрация продуктов по цене, категории и строке поиска
   const handleFilterProducts = () => {
@@ -74,6 +69,7 @@ export const Filter = () => {
   // Обработчик изменения сортировки
   const handleSortChange = (value) => {
     setSortOption(value);
+    handleFilterProducts(); // Применить сортировку сразу
   };
 
   // Обработчик добавления и удаления из корзины
@@ -97,14 +93,14 @@ export const Filter = () => {
         {/* Секция сортировки */}
         <div className='flex items-center gap-2'>
           <p className='whitespace-nowrap text-sm md:text-base'>Сортировать по: </p>
-          <Select onValueChange={handleSortChange}>
+          <Select value={sortOption} onValueChange={handleSortChange}>
             <SelectTrigger className='w-[180px]'>
               <SelectValue placeholder='Популярности' />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value='popularity'>Популярности</SelectItem>
-              <SelectItem value='price-desc'>Стоимость ↓</SelectItem>
-              <SelectItem value='price-asc'>Стоимость ↑</SelectItem>
+              <SelectItem value='price-asc'>Стоимость ↓</SelectItem>
+              <SelectItem value='price-desc'>Стоимость ↑</SelectItem>
             </SelectContent>
           </Select>
         </div>

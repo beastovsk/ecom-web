@@ -6,15 +6,15 @@ import {Textarea} from '@/components/ui/textarea';
 import {deleteProduct, getAllProducts, updateProduct, createProduct} from '@/data/api/products';
 import React, {useEffect, useState} from 'react';
 import {useMutation, useQuery} from 'react-query';
-import {Dialog, DialogTrigger, DialogContent, DialogClose} from '@/components/ui/dialog';
+import {Dialog, DialogTrigger, DialogContent} from '@/components/ui/dialog';
 import {Plus} from 'lucide-react';
 import {CustomEditor} from '@/components/CustomEditor';
-import {Image, Upload} from 'antd';
-import type {GetProp, UploadFile, UploadProps} from 'antd';
+import {Upload, UploadFile, UploadProps} from 'antd';
 import {getCategories} from '@/data/api/categories';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@/components/ui/select';
+import {useToast} from '@/components/ui/use-toast'; // Adjust import as necessary
 
-type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
+type FileType = Parameters<UploadProps['beforeUpload']>[0];
 
 const getBase64 = (file: FileType): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -26,10 +26,38 @@ const getBase64 = (file: FileType): Promise<string> =>
 
 export const Products: React.FC = () => {
   const {data, refetch} = useQuery('products', getAllProducts);
+  const {data: categories} = useQuery('categories', getCategories);
+  const {toast} = useToast(); // Using custom toast hook
 
-  const deleteMutation = useMutation(deleteProduct, {onSuccess: () => refetch()});
-  const updateMutation = useMutation(updateProduct, {onSuccess: () => refetch()});
-  const createMutation = useMutation(createProduct, {onSuccess: () => refetch()});
+  const deleteMutation = useMutation(deleteProduct, {
+    onSuccess: () => {
+      refetch();
+      toast({title: 'Успех!', description: 'Продукт успешно удален!'});
+    },
+    onError: () => {
+      toast({title: 'Ошибка!', description: 'Не удалось удалить продукт.'});
+    }
+  });
+
+  const updateMutation = useMutation(updateProduct, {
+    onSuccess: () => {
+      refetch();
+      toast({title: 'Успех!', description: 'Продукт успешно обновлен!'});
+    },
+    onError: () => {
+      toast({title: 'Ошибка!', description: 'Не удалось обновить продукт.'});
+    }
+  });
+
+  const createMutation = useMutation(createProduct, {
+    onSuccess: () => {
+      refetch();
+      toast({title: 'Успех!', description: 'Продукт успешно добавлен!'});
+    },
+    onError: () => {
+      toast({title: 'Ошибка!', description: 'Не удалось добавить продукт.'});
+    }
+  });
 
   const handleDelete = (productId: number) => {
     deleteMutation.mutate({id: productId});
@@ -106,10 +134,8 @@ const ProductForm: React.FC<{initialData?: any; onSubmit: (data: any) => void}> 
   onSubmit
 }) => {
   const [productData, setProductData] = useState(initialData);
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const {data} = useQuery('categories', getCategories);
+  const {data: categories} = useQuery('categories', getCategories);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setProductData({
@@ -127,8 +153,12 @@ const ProductForm: React.FC<{initialData?: any; onSubmit: (data: any) => void}> 
 
   useEffect(() => {
     if (!initialData.images) return;
-    const images = JSON.parse(initialData.images);
-    setFileList(images.map(({url}) => ({thumbUrl: url})));
+    try {
+      const images = JSON.parse(initialData.images);
+      setFileList(images.map(({url}) => ({thumbUrl: url})));
+    } catch (error) {
+      console.error('Failed to parse images:', error);
+    }
   }, [initialData]);
 
   const handleEditorChange = (value: string) => {
@@ -180,7 +210,6 @@ const ProductForm: React.FC<{initialData?: any; onSubmit: (data: any) => void}> 
       />
       <div>
         <p className='mb-2'>Изображения</p>
-
         <Upload listType='picture-card' fileList={fileList} onChange={handleUploadChange}>
           {fileList.length >= 8 ? null : uploadButton}
         </Upload>
@@ -193,7 +222,7 @@ const ProductForm: React.FC<{initialData?: any; onSubmit: (data: any) => void}> 
           <SelectValue placeholder='Категория' />
         </SelectTrigger>
         <SelectContent>
-          {data?.categories.map(({name}) => (
+          {categories?.categories.map(({name}) => (
             <SelectItem key={name} value={name}>
               {name}
             </SelectItem>

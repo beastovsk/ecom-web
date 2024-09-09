@@ -1,3 +1,7 @@
 .link {
   @apply hover:opacity-80 transition-opacity;
 }
+
+.active {
+  @apply opacity-70;
+}

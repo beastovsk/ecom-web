@@ -38,11 +38,11 @@ const Blog: React.FC = () => {
                   <span>Статья</span>
                 </div>
                 <h2 className='text-2xl font-bold mb-2'>
-                  <Link href={`/blog/${post.id}`}>{post.title}</Link>
+                  <Link href={`/blog?article=${post.id}`}>{post.title}</Link>
                 </h2>
                 {/* Выводим часть контента статьи или краткое описание */}
                 <p className='text-gray-700 mb-4 h-10'>{parse(post.content)}</p>
-                <Link href={`/blog/${post.id}`} className='text-blue-600 hover:underline'>
+                <Link href={`/blog?article=${post.id}`} className='text-blue-600 hover:underline'>
                   Подробнее
                 </Link>
               </div>

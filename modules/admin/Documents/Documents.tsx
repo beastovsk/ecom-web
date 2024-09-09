@@ -6,9 +6,12 @@ import {Button} from '@/components/ui/button';
 import {Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
 import {Input} from '@/components/ui/input';
 import {createDocument, updateDocument, getDocuments, deleteDocument} from '@/data/api/documents';
+import {useToast} from '@/components/ui/use-toast'; // Import useToast for notifications
 
 export const Documents: React.FC = () => {
   const queryClient = useQueryClient();
+  const {toast} = useToast(); // Initialize toast for notifications
+
   const [newDocument, setNewDocument] = useState({name: '', content: ''});
   const [editDocument, setEditDocument] = useState<{id: number; name: string; content: string} | null>(null);
 
@@ -17,10 +20,14 @@ export const Documents: React.FC = () => {
 
   // Create document mutation
   const createMutation = useMutation(createDocument, {
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries('documents');
       setNewDocument({name: '', content: ''});
       refetch();
+      toast({title: 'Документ добавлен', description: response.message}); // Success notification
+    },
+    onError: () => {
+      toast({title: 'Ошибка', description: 'Не удалось добавить документ'}); // Error notification
     }
   });
 
@@ -28,28 +35,38 @@ export const Documents: React.FC = () => {
   const updateMutation = useMutation(
     ({id, data}: {id: number; data: {name: string; content: string}}) => updateDocument(id, data),
     {
-      onSuccess: () => {
+      onSuccess: (response) => {
         queryClient.invalidateQueries('documents');
         setEditDocument(null);
         refetch();
+        toast({title: 'Документ обновлен', description: response.message}); // Success notification
+      },
+      onError: () => {
+        toast({title: 'Ошибка', description: 'Не удалось обновить документ'}); // Error notification
       }
     }
   );
 
   // Delete document mutation
   const deleteMutation = useMutation((id: number) => deleteDocument(id), {
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries('documents');
       refetch();
+      toast({title: 'Документ удален', description: response.message}); // Success notification
+    },
+    onError: () => {
+      toast({title: 'Ошибка', description: 'Не удалось удалить документ'}); // Error notification
     }
   });
 
   // Handlers
   const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
     createMutation.mutate(newDocument);
   };
 
   const handleUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
     if (editDocument) {
       updateMutation.mutate({id: editDocument.id, data: {name: editDocument.name, content: editDocument.content}});
     }

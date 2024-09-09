@@ -7,9 +7,11 @@ import {Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger} from '@
 import {Input} from '@/components/ui/input';
 import {Upload, UploadFile} from 'antd'; // For handling file upload
 import {getBanners, createBanner, deleteBanner} from '@/data/api/banner'; // Banner API functions
+import {useToast} from '@/components/ui/use-toast'; // Import useToast for notifications
 
 export const Banner: React.FC = () => {
   const queryClient = useQueryClient();
+  const {toast} = useToast(); // Initialize toast for notifications
 
   // State for form data
   const [formState, setFormState] = useState({
@@ -28,30 +30,26 @@ export const Banner: React.FC = () => {
 
   // Mutation for creating a new banner
   const mutationCreate = useMutation(createBanner, {
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries('banners');
-      // Clear form state after successful creation
-      setFormState({name: '', img: ''});
+      setFormState({name: '', img: ''}); // Clear form state after successful creation
       refetch();
+      toast({title: 'Баннер добавлен', description: response.message}); // Success notification
+    },
+    onError: () => {
+      toast({title: 'Ошибка', description: 'Не удалось добавить баннер'}); // Error notification
     }
   });
 
-  // Mutation for updating a banner
-  // const mutationUpdate = useMutation(
-  //   ({id, ...rest}: {id: number; name: string; image: string}) => updateBanner(id, rest),
-  //   {
-  //     onSuccess: () => {
-  //       queryClient.invalidateQueries('banners');
-  //       setEditState(null);
-  //     }
-  //   }
-  // );
-
   // Mutation for deleting a banner
   const mutationDelete = useMutation(deleteBanner, {
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries('banners');
       refetch();
+      toast({title: 'Баннер удален', description: response.message}); // Success notification
+    },
+    onError: () => {
+      toast({title: 'Ошибка', description: 'Не удалось удалить баннер'}); // Error notification
     }
   });
 
@@ -91,17 +89,6 @@ export const Banner: React.FC = () => {
   const handleCreateBanner = async (event: React.FormEvent) => {
     event.preventDefault();
     mutationCreate.mutate(formState);
-  };
-
-  // Handle form submission for updating banner
-  const handleUpdateBanner = async () => {
-    if (editState) {
-      // mutationUpdate.mutate({
-      //   id: editState.id,
-      //   name: editState.name,
-      //   image: editState.image
-      // });
-    }
   };
 
   if (isLoading) return <p>Loading...</p>;

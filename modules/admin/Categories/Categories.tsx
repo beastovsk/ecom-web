@@ -6,9 +6,11 @@ import {Button} from '@/components/ui/button';
 import {Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
 import {Input} from '@/components/ui/input';
 import {createCategory, updateCategory, deleteCategory, getCategories} from '@/data/api/categories';
+import {useToast} from '@/components/ui/use-toast'; // Импорт useToast
 
 export const Categories: React.FC = () => {
   const queryClient = useQueryClient();
+  const {toast} = useToast(); // Инициализация toasts
   const [editCategory, setEditCategory] = useState<{id: number; name: string} | null>(null);
   const [newCategoryName, setNewCategoryName] = useState('');
 
@@ -17,27 +19,39 @@ export const Categories: React.FC = () => {
 
   // Мутация для создания категории
   const createMutation = useMutation(createCategory, {
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries('categories');
       setNewCategoryName('');
       refetch();
+      toast({title: 'Категория добавлена', description: response.message}); // Уведомление при добавлении
+    },
+    onError: () => {
+      toast({title: 'Ошибка', description: 'Не удалось добавить категорию'});
     }
   });
 
   // Мутация для обновления категории
   const updateMutation = useMutation(updateCategory, {
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries('categories');
       setEditCategory(null);
       refetch();
+      toast({title: 'Категория обновлена', description: response.message}); // Уведомление при изменении
+    },
+    onError: () => {
+      toast({title: 'Ошибка', description: 'Не удалось обновить категорию'});
     }
   });
 
   // Мутация для удаления категории
   const deleteMutation = useMutation(deleteCategory, {
-    onSuccess: () => {
+    onSuccess: (response) => {
       queryClient.invalidateQueries('categories');
       refetch();
+      toast({title: 'Категория удалена', description: response.message}); // Уведомление при удалении
+    },
+    onError: () => {
+      toast({title: 'Ошибка', description: 'Не удалось удалить категорию'});
     }
   });
 

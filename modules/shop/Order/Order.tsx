@@ -56,6 +56,7 @@ export const Order = () => {
           onSuccess: ({message}) => {
             toast({title: 'Информация о заказе', description: message});
             router.push('/profile');
+            localStorage.removeItem('cart');
           }
         }
       );

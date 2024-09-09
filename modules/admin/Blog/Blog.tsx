@@ -7,58 +7,65 @@ import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Upload, UploadFile} from 'antd';
 import {Dialog, DialogContent, DialogFooter, DialogTitle, DialogTrigger} from '@/components/ui/dialog';
-import {getAllBlogs, createBlog, deleteBlog, updateBlog} from '@/data/api/blog'; // Добавляем updateBlog
+import {getAllBlogs, createBlog, deleteBlog, updateBlog} from '@/data/api/blog';
+import {useToast} from '@/components/ui/use-toast';
 
 export const Blog: React.FC = () => {
   const queryClient = useQueryClient();
+  const {toast} = useToast(); // Инициализация toast
 
-  // State for form data
   const [formState, setFormState] = useState({
     title: '',
     content: '',
-    images: '', // Base64 image data
-    tags: '' // New field for tags
+    images: '',
+    tags: ''
   });
 
   const [editState, setEditState] = useState<{
     id: number;
     title: string;
     content: string;
-    images: string; // Base64 image data or parsed URL from JSON
+    images: string;
     tags: string;
   } | null>(null);
 
-  // Fetch blogs
   const {data, isLoading, error} = useQuery('blogs', getAllBlogs);
 
-  // Mutation for creating a new blog
   const mutationCreate = useMutation(createBlog, {
     onSuccess: () => {
       queryClient.invalidateQueries('blogs');
-      // Clear form state after successful creation
       setFormState({title: '', content: '', images: '', tags: ''});
+      toast({title: 'Успех', description: 'Блог успешно создан!'});
+    },
+    onError: (error) => {
+      toast({title: 'Ошибка', description: `Не удалось создать блог`});
     }
   });
 
-  // Mutation for updating a blog
   const mutationUpdate = useMutation(
     ({id, ...rest}: {id: number; title: string; content: string; images: string; tags: string}) => updateBlog(id, rest),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('blogs');
         setEditState(null);
+        toast({title: 'Успех', description: 'Блог успешно обновлен!'});
+      },
+      onError: (error) => {
+        toast({title: 'Ошибка', description: `Не удалось обновить блог`});
       }
     }
   );
 
-  // Mutation for deleting a blog
   const mutationDelete = useMutation(deleteBlog, {
     onSuccess: () => {
       queryClient.invalidateQueries('blogs');
+      toast({title: 'Успех', description: 'Блог успешно удален!'});
+    },
+    onError: (error) => {
+      toast({title: 'Ошибка', description: `Не удалось удалить блог`});
     }
   });
 
-  // Handle form state change
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const {name, value} = event.target;
     setFormState((prevState) => ({...prevState, [name]: value}));
@@ -69,7 +76,6 @@ export const Blog: React.FC = () => {
     setEditState((prevState) => (prevState ? {...prevState, [name]: value} : null));
   };
 
-  // Handle image upload change
   const handleImageChange = (info: {fileList: UploadFile[]}, isEdit = false) => {
     if (info.fileList.length > 0) {
       const file = info.fileList[0].originFileObj;
@@ -90,13 +96,11 @@ export const Blog: React.FC = () => {
     }
   };
 
-  // Handle form submission for creating blog
   const handleCreateBlog = async (event: React.FormEvent) => {
     event.preventDefault();
     mutationCreate.mutate({...formState});
   };
 
-  // Handle form submission for updating blog
   const handleUpdateBlog = async () => {
     if (editState) {
       mutationUpdate.mutate({
@@ -109,7 +113,7 @@ export const Blog: React.FC = () => {
     }
   };
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <p>Загрузка...</p>;
   if (error) return <p>Произошла ошибка</p>;
 
   return (
@@ -126,7 +130,7 @@ export const Blog: React.FC = () => {
           </thead>
           <tbody>
             {data?.blogs?.map((blog) => {
-              const imageUrl = JSON.parse(blog.images)?.url || '/images/default.jpg'; // Parse JSON to get the URL
+              const imageUrl = JSON.parse(blog.images)?.url || '/images/default.jpg'; // Разбираем JSON для получения URL
               return (
                 <tr key={blog.id}>
                   <td className='p-2'>{blog.title}</td>
