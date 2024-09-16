@@ -8,15 +8,19 @@ import {useQuery} from 'react-query';
 import {Skeleton} from '@/components/ui/skeleton';
 import {ProductCard} from '../ProductCard/ProductCard';
 
-export const Products = () => {
+export const Products = ({products}) => {
   const {data, isSuccess, isLoading} = useQuery('products', getAllProducts);
-  const [products, setProducts] = useState([]);
+  const [curProducts, setProducts] = useState([]);
 
   // Обновление состояния продуктов при успешном запросе
   useEffect(() => {
-    if (!isSuccess) return;
-    const {products} = data;
-    setProducts(products?.length ? products.slice(0, 3) : []); // Показываем первые 3 продукта
+    if (products) {
+      setProducts(products.products);
+      return;
+    }
+    if (isSuccess) {
+      setProducts(products?.length ? products.slice(0, 4) : []); // Показываем первые 3 продукта
+    }
   }, [data, isSuccess]);
 
   // Обработчик добавления и удаления из корзины
@@ -37,9 +41,9 @@ export const Products = () => {
               <Skeleton className='h-5 w-1/3' />
             </div>
           ))
-        ) : products.length ? (
+        ) : curProducts.length ? (
           // Карточки продуктов при успешной загрузке
-          products.map((product) => <ProductCard product={product} />)
+          curProducts.map((product) => <ProductCard product={product} />)
         ) : (
           // Сообщение, если данных нет
           <p className='col-span-full text-center'>Продукты не найдены.</p>
