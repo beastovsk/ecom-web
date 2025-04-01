@@ -41,10 +41,10 @@ const Blog: React.FC = () => {
                   <Link href={`/blog?article=${post.id}`}>{post.title}</Link>
                 </h2>
                 {/* Обрезка текста подзаголовка и добавление троеточия */}
-                <p className='text-gray-700 mb-4 h-24 overflow-hidden line-clamp-3'>{parse(post.content)}</p>
+                {/* <p className='text-gray-700 mb-4 h-24 overflow-hidden line-clamp-3'>{parse(post.content)}</p> */}
                 <Link
                   href={`/blog?article=${post.id}`}
-                  className='inline-block mt-4 px-4 py-2 transition duration-300 ease-in-out'
+                  className='inline-block mt-4 transition duration-300 ease-in-out'
                 >
                   Подробнее
                 </Link>

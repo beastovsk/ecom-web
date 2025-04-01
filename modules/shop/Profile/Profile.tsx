@@ -29,8 +29,8 @@ export const Profile = () => {
     }
 
     if (token) {
-      deleteCookie('token');
-      toast({title: 'Уведомление', description: 'Сессия была завершена, пожалуйста перезайдите'});
+      // deleteCookie('token');
+      // toast({title: 'Уведомление', description: 'Сессия была завершена, пожалуйста перезайдите'});
     }
   }, [data, isSuccess]);
 

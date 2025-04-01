@@ -42,7 +42,8 @@ export const Filter = () => {
     if (categoryFromURL) {
       setCategory(categoryFromURL);
     }
-  }, [searchParams]);
+    handleFilterProducts();
+  }, [searchParams, products]);
 
   // Фильтрация продуктов по цене, категории и строке поиска
   const handleFilterProducts = () => {
@@ -69,7 +70,7 @@ export const Filter = () => {
   // Обработчик изменения сортировки
   const handleSortChange = (value) => {
     setSortOption(value);
-    handleFilterProducts(); // Применить сортировку сразу
+    handleFilterProducts();
   };
 
   // Обработчик добавления и удаления из корзины

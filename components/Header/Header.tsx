@@ -75,7 +75,7 @@ export const Header = ({shop}) => {
           )}
         </div>
 
-        <Link href='/cart' className='opacity-70 hover:opacity-90'>
+        <Link href='/cart' className='opacity-70 hover:opacity-90 flex'>
           <Badge count={totalQuantity} className='mr-2 text-inherit'>
             <ShoppingCart size={24} />
           </Badge>

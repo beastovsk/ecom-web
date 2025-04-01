@@ -54,8 +54,8 @@ export default async function Page() {
     <div className='flex w-full flex-col'>
       <Banner />
       <main className='flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8'>
-        <Categories categories={categories} />
         <Products products={products} />
+        <Categories categories={categories} />
       </main>
     </div>
   );

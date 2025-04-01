@@ -31,7 +31,7 @@ export const Products = ({products}) => {
       <h2 className='text-2xl font-semibold text-center mb-6'>Последние продукты</h2>
 
       {/* Сетка продуктов */}
-      <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
+      <div className='flex justify-center gap-6 flex-wrap'>
         {isLoading ? (
           // Скелетон при загрузке
           Array.from({length: 4}).map((_, index) => (
@@ -43,7 +43,7 @@ export const Products = ({products}) => {
           ))
         ) : curProducts.length ? (
           // Карточки продуктов при успешной загрузке
-          curProducts.map((product) => <ProductCard product={product} />)
+          curProducts.slice(0, 3).map((product) => <ProductCard product={product} />)
         ) : (
           // Сообщение, если данных нет
           <p className='col-span-full text-center'>Продукты не найдены.</p>

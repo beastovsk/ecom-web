@@ -36,7 +36,7 @@ export const Categories = ({categories}) => {
                 className='relative p-6 rounded-lg shadow hover:shadow-lg transform transition duration-300 ease-in-out'
               >
                 <div className='flex flex-col items-center justify-center h-full'>
-                  <h3 className='text-xl font-medium text-blue-800'>{name}</h3>
+                  <h3 className='text-xl font-medium'>{name}</h3>
                 </div>
               </Link>
             ))

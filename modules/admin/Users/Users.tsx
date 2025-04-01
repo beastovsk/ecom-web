@@ -51,7 +51,11 @@ export const Users: React.FC = () => {
               <tr key={user.id}>
                 <td className='p-2 border-b'>{user.id}</td>
                 <td className='p-2 border-b'>{user.email}</td>
-                <td className='p-2 border-b'>{user.registerdate}</td>
+                <td className='p-2 border-b'>
+                  {new Intl.DateTimeFormat('ru-RU', {timeStyle: 'medium', dateStyle: 'medium'})?.format(
+                    new Date(user.registerdate)
+                  )}
+                </td>
                 <td className='p-2 border-b'>{user.amountorders}</td>
                 {/* <td className='p-2 border-b'>
                   <Dialog>

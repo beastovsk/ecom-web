@@ -68,9 +68,9 @@ export const Footer = ({shop}) => {
 
         {/* Нижняя часть футера */}
         <div className='border-t border-gray-200 pt-4 text-center text-sm text-gray-500'>
-          <p>© 2024 Все права защищены.</p>
+          <p>© 2025 Все права защищены.</p>
           <p>
-            Качественные интернет магазины -{' '}
+            Интернет магазины для малого бизнеса-{' '}
             <Link href='https://ecom-store.ru' className='underline hover:text-blue-300 transition-colors'>
               https://ecom-store.ru
             </Link>

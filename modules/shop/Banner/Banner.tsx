@@ -12,19 +12,19 @@ export const Banner = () => {
   }
 
   return (
-    <div className='w-full h-[50vh] mt-4'>
+    <div className='w-full h-[70vh] mt-4'>
       <Carousel autoplay effect='fade'>
         {data.banners.map((banner, index) => {
           const imageUrl = banner.img || '/images/default.jpg'; // Получаем URL из JSON-строки
           return (
-            <div key={index} className='w-full h-[50vh]'>
+            <div key={index} className='w-full h-[70vh]'>
               <Image
                 src={imageUrl}
                 alt={`Banner ${index + 1}`}
                 width={1000}
                 height={800}
                 quality={100}
-                className='w-full h-[50vh] object-cover'
+                className='w-full h-[70vh] object-cover'
               />
             </div>
           );
